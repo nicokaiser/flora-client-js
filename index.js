@@ -14,8 +14,9 @@
      * {@link https://nodejs.org/api/http.html|http}/{@link https://nodejs.org/api/https.html|https} module in Node.js
      * to run requests against Flora instance.
      *
-     * @param {Object} options      - Client config options
-     * @param {string} options.url  - URL of Flora instance
+     * @param {Object}  options                 - Client config options
+     * @param {string}  options.url             - URL of Flora instance
+     * @param {?Object} options.defaultParams   - Parameters added to each request automatically
      * @constructor
      */
     function FloraClient(options) {
@@ -29,6 +30,15 @@
          * @readonly
          */
         this.url = options.url.substr(-1) === '/' ? options.url : options.url + '/';
+
+        if (options.defaultParams && typeof options.defaultParams === 'object') {
+            this.defaultParams = {};
+            for (var key in options.defaultParams) {
+                if (options.defaultParams.hasOwnProperty(key)) {
+                    this.defaultParams[key] = options.defaultParams[key];
+                }
+            }
+        }
     }
 
     /**
@@ -57,6 +67,7 @@
                 params: {},
                 headers: {}
             },
+            key,
             specialKeys = ['resource', 'id', 'cache', 'data'],
             skipCache = request.hasOwnProperty('cache') && !!request.cache === false;
 
@@ -76,8 +87,19 @@
             delete request[specialKeys[i]];
         }
 
-        for (var key in request) {
-            if (request.hasOwnProperty(key)) opts.params[key] = request[key];
+        for (key in request) {
+            if (request.hasOwnProperty(key)) {
+                if (request.hasOwnProperty(key)) opts.params[key] = request[key];
+            }
+        }
+
+        if (this.defaultParams) {
+            for (key in this.defaultParams) {
+                //noinspection JSUnfilteredForInLoop
+                if (!opts.params.hasOwnProperty(key)) { //noinspection JSUnfilteredForInLoop
+                    opts.params[key] = this.defaultParams[key];
+                }
+            }
         }
 
         opts.httpMethod = !request.hasOwnProperty('httpMethod') ? getHttpMethod(opts) : request.httpMethod;
@@ -108,6 +130,7 @@
                 callback(null, response);
             };
             opts.error = function (jqXHR) {
+                //noinspection JSUnresolvedVariable
                 err = jqXHR.responseJSON && jqXHR.responseJSON.error || {};
                 callback(new Error(err.message || 'error'));
             };
@@ -176,6 +199,7 @@
         var params = [];
 
         for (var key in obj) {
+            //noinspection JSUnfilteredForInLoop
             params.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
         }
 

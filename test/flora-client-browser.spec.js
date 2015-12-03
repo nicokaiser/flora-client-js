@@ -104,27 +104,51 @@ define(['flora-client'], function (FloraClient) {
                 expect(request.requestBody).to.equal('{"title":"Lorem Ipsum","author":{"id":1337}}');
             });
 
-            it('should order parameters by name (better caching)', function () {
-                var queryString = [
-                    'filter=address.country.iso2%3DAT',
-                    'limit=10',
-                    'order=lastname%3Adesc',
-                    'page=3',
-                    'search=John',
-                    'select=id%2Cfirstname%2Clastname'
-                ].join('&');
+            describe('parameters', function () {
+                it('should ordered by name (better caching)', function () {
+                    var queryString = [
+                        'filter=address.country.iso2%3DAT',
+                        'limit=10',
+                        'order=lastname%3Adesc',
+                        'page=3',
+                        'search=John',
+                        'select=id%2Cfirstname%2Clastname'
+                    ].join('&');
 
-                api.execute({
-                    resource: 'user',
-                    search: 'John',
-                    page: 3,
-                    limit: 10,
-                    order: 'lastname:desc',
-                    select: 'id,firstname,lastname',
-                    filter: 'address.country.iso2=AT'
+                    api.execute({
+                        resource: 'user',
+                        search: 'John',
+                        page: 3,
+                        limit: 10,
+                        order: 'lastname:desc',
+                        select: 'id,firstname,lastname',
+                        filter: 'address.country.iso2=AT'
+                    });
+
+                    expect(requests[0].url).to.contain('/user/?' + queryString);
                 });
 
-                expect(requests[0].url).to.contain('/user/?' + queryString);
+                it('should support defaults', function () {
+                    var api = new FloraClient({
+                        url: url,
+                        defaultParams: {param: 'abc'}
+                    });
+
+                    api.execute({resource: 'user', id: 1337});
+
+                    expect(requests[0].url).to.contain('/user/1337?param=abc');
+                });
+
+                it('should use request parameter if default exists with same name', function () {
+                    var api = new FloraClient({
+                        url: url,
+                        defaultParams: {param: 'abc'}
+                    });
+
+                    api.execute({resource: 'user', id: 1337, param: 'xyz'});
+
+                    expect(requests[0].url).to.contain('/user/1337?param=xyz');
+                });
             });
 
             describe('HTTP method', function () {

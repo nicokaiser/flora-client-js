@@ -132,31 +132,6 @@ describe('Flora node client', function () {
             }, done);
         });
 
-        it('should order parameters by name (better caching)', function (done) {
-            var queryString = [
-                'filter=address.country.iso2%3DAT',
-                'limit=10',
-                'order=lastname%3Adesc',
-                'page=3',
-                'search=John',
-                'select=id%2Cfirstname%2Clastname'
-            ].join('&');
-
-            req = nock(url)
-                .get('/user/?' + queryString)
-                .reply(200, response);
-
-            api.execute({
-                resource: 'user',
-                search: 'John',
-                page: 3,
-                limit: 10,
-                order: 'lastname:desc',
-                select: 'id,firstname,lastname',
-                filter: 'address.country.iso2=AT'
-            }, done);
-        });
-
         describe('HTTP method', function () {
             it('should use GET for "retrieve" actions', function (done) {
                 req = nock(url)
@@ -208,6 +183,59 @@ describe('Flora node client', function () {
                     page: 10
                 }, done);
             });
+        });
+    });
+
+    describe('parameters', function () {
+        it('should be ordered by name (better caching)', function (done) {
+            var queryString = [
+                'filter=address.country.iso2%3DAT',
+                'limit=10',
+                'order=lastname%3Adesc',
+                'page=3',
+                'search=John',
+                'select=id%2Cfirstname%2Clastname'
+            ].join('&');
+
+            req = nock(url)
+                .get('/user/?' + queryString)
+                .reply(200, {});
+
+            api.execute({
+                resource: 'user',
+                search: 'John',
+                page: 3,
+                limit: 10,
+                order: 'lastname:desc',
+                select: 'id,firstname,lastname',
+                filter: 'address.country.iso2=AT'
+            }, done);
+        });
+
+        it('should support default parameters', function (done) {
+            var api = new FloraClient({
+                url: url,
+                defaultParams: {param: 'abc'}
+            });
+
+            req = nock(url)
+                .get('/user/1337?param=abc')
+                .reply(200, {});
+
+            api.execute({resource: 'user', id: 1337}, done);
+        });
+
+        it('should use request parameter if default exists with same name', function (done) {
+            var api = new FloraClient({
+                url: url,
+                defaultParams: {param: 'abc'}
+            });
+
+            req = nock(url)
+                .get('/user/1337?param=xyz')
+                .reply(200, {});
+
+            api.execute({resource: 'user', id: 1337, param: 'xyz'}, done);
         });
     });
 
