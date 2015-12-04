@@ -88,9 +88,7 @@
         }
 
         for (key in request) {
-            if (request.hasOwnProperty(key)) {
-                if (request.hasOwnProperty(key)) opts.params[key] = request[key];
-            }
+            if (request.hasOwnProperty(key)) opts.params[key] = request[key];
         }
 
         if (this.defaultParams) {
