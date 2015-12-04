@@ -3,9 +3,6 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         env: {
-            mochaBamboo: {
-                MOCHA_FILE: 'build/node.mocha.js'
-            },
             karma: { // use PhantomJS NPM version
                 PHANTOMJS_BIN: 'node_modules/.bin/phantomjs'
             }
@@ -116,7 +113,7 @@ module.exports = function (grunt) {
 
     // node.js tests
     grunt.registerTask('test-node', 'mochaTest:node');
-    grunt.registerTask('test-node-bamboo', ['mkdir:build', 'env:mochaBamboo', 'mochaTest:nodeBamboo']);
+    grunt.registerTask('test-node-bamboo', ['mkdir:build', 'mochaTest:nodeBamboo']);
     grunt.registerTask('node-cov', 'mocha_istanbul:coverageBamboo');
 
     // browser tests
