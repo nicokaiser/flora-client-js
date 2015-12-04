@@ -71,13 +71,10 @@ module.exports = function (grunt) {
                 }
             },
             browserAMDBamboo: {
-                configFile: '<%= karma.browser.configFile %>',
+                configFile: '<%= karma.browserAMD.configFile %>',
                 options: {
                     reporters: ['bamboo'],
-                    files: ['<%= karma.browserAMD.options.files %>'],
-                    bambooReporter: {
-                        filename: 'build/browser.mocha.json'
-                    }
+                    files: '<%= karma.browserAMD.options.files %>'
                 }
             },
             browserGlobalVariable: {
