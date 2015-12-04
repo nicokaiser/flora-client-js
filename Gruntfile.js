@@ -42,8 +42,8 @@ module.exports = function (grunt) {
         },
 
         'mocha_istanbul': {
-            coverage: {
-                src: 'test',
+            'coverageBamboo': {
+                src: '<%= mochaTest.node.src %>',
                 options: {
                     coverageFolder: 'build',
                     reportFormats: ['clover', 'lcov']
@@ -117,7 +117,7 @@ module.exports = function (grunt) {
     // node.js tests
     grunt.registerTask('test-node', 'mochaTest:node');
     grunt.registerTask('test-node-bamboo', ['mkdir:build', 'env:mochaBamboo', 'mochaTest:nodeBamboo']);
-    grunt.registerTask('test-cov', 'mocha_istanbul:coverage');
+    grunt.registerTask('node-cov', 'mocha_istanbul:coverageBamboo');
 
     // browser tests
     grunt.registerTask('test-browser', ['env:karma', 'karma:browserGlobalVariable', 'karma:browserAMD']);
