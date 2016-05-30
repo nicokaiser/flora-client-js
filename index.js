@@ -168,7 +168,12 @@
 
                 if (!hasCallback) return;
 
-                response = JSON.parse(str);
+                try {
+                    response = JSON.parse(str);
+                } catch (e) {
+                    return callback(new Error('Couldn\'t parse response'));
+                }
+
                 if (res.statusCode < 400) callback(null, response);
                 else callback(new Error(response.error && response.error.message || 'error'));
             });

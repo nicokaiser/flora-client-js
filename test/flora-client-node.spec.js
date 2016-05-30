@@ -280,6 +280,17 @@ describe('Flora node client', function () {
                 done();
             });
         });
+
+        it('should trigger an error if JSON cannot be parsed', function (done) {
+            req = nock(url)
+                .get('/user/')
+                .reply(200, 'foobar');
+
+            api.execute({ resource: 'user' }, function (err) {
+                expect(err).to.be.instanceOf(Error);
+                done();
+            });
+        });
     });
 
     describe('formats', function () {
