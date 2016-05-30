@@ -58,9 +58,9 @@
      * @param {Object=}             request.data         - Send data as JSON
      * @param {boolean=}            request.cache        - Use HTTP caching (default: true)
      * @param {string=}             request.httpMethod   - Explicitly overwrite HTTP method
-     * @param {function=}           callback
+     * @param {function=}           done
      */
-    FloraClient.prototype.execute = function (request, callback) {
+    FloraClient.prototype.execute = function (request, done) {
         var opts = {
                 resource: request.resource,
                 id: request.id,
@@ -74,7 +74,7 @@
         opts.url = this.url + request.resource + '/' + (request.id || '');
 
         if (request.format && String(request.format).toLocaleLowerCase() !== 'json') {
-            return callback(new Error('Only JSON format supported'));
+            return done(new Error('Only JSON format supported'));
         }
 
         if (request.data) { // post property as JSON
@@ -113,24 +113,24 @@
         // add cache breaker to bypass HTTP caching
         if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + (new Date()).getTime();
 
-        this._request(opts, callback);
+        this._request(opts, done);
     };
 
     // Execute HTTP request in a browser
-    FloraClient.prototype._browserRequest = function (cfg, callback) {
+    FloraClient.prototype._browserRequest = function (cfg, done) {
         var opts = { method: cfg.httpMethod, headers: cfg.headers },
             err;
 
         opts.data = cfg.jsonData ? cfg.jsonData : cfg.params;
 
-        if (typeof callback === 'function') {
+        if (typeof done === 'function') {
             opts.success = function (response) {
-                callback(null, response);
+                done(null, response);
             };
             opts.error = function (jqXHR) {
                 //noinspection JSUnresolvedVariable
                 err = jqXHR.responseJSON && jqXHR.responseJSON.error || {};
-                callback(new Error(err.message || 'error'));
+                done(new Error(err.message || 'error'));
             };
         }
 
@@ -138,12 +138,12 @@
     };
 
     // Execute HTTP request in Node.js
-    FloraClient.prototype._nodeRequest = function (cfg, callback) {
+    FloraClient.prototype._nodeRequest = function (cfg, done) {
         var protocol = require('http' + (this.url.indexOf('http:') !== -1 ? '' : 's')),
             url = require('url'),
             path = require('path');
 
-        var hasCallback = typeof callback === 'function',
+        var hasCallback = typeof done === 'function',
             opts = url.parse(cfg.url),
             postBody,
             req;
@@ -171,17 +171,17 @@
                 try {
                     response = JSON.parse(str);
                 } catch (e) {
-                    return callback(new Error('Couldn\'t parse response'));
+                    return done(new Error('Couldn\'t parse response'));
                 }
 
-                if (res.statusCode < 400) callback(null, response);
-                else callback(new Error(response.error && response.error.message || 'error'));
+                if (res.statusCode < 400) done(null, response);
+                else done(new Error(response.error && response.error.message || 'error'));
             });
         });
 
         if (postBody) req.write(postBody);
 
-        if (hasCallback) req.on('error', callback);
+        if (hasCallback) req.on('error', done);
         req.end();
     };
 
