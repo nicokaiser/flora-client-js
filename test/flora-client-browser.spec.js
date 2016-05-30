@@ -224,15 +224,15 @@ define(['flora-client'], function (FloraClient) {
 
             it('should return error as first parameter', function (done) {
                 var serverResponse = JSON.stringify({
-                        meta: {},
-                        data: null,
-                        error: {
-                            message: 'foobar'
-                        }
-                    });
+                    meta: {},
+                    data: null,
+                    error: {
+                        message: 'foobar'
+                    }
+                });
 
-                server.respondWith([500, { 'Content-Type': 'application/json' }, serverResponse ]);
-                api.execute({ resource: 'user' }, function (err) {
+                server.respondWith([500, {'Content-Type': 'application/json'}, serverResponse]);
+                api.execute({resource: 'user'}, function (err) {
                     expect(err).to.be.instanceof(Error);
                     expect(err.message).to.equal('foobar');
                     done();
