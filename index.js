@@ -118,8 +118,7 @@
 
     // Execute HTTP request in a browser
     FloraClient.prototype._browserRequest = function (cfg, done) {
-        var opts = { method: cfg.httpMethod, headers: cfg.headers },
-            err;
+        var opts = {method: cfg.httpMethod, headers: cfg.headers};
 
         opts.data = cfg.jsonData ? cfg.jsonData : cfg.params;
 
@@ -129,7 +128,7 @@
             };
             opts.error = function (jqXHR) {
                 //noinspection JSUnresolvedVariable
-                err = jqXHR.responseJSON && jqXHR.responseJSON.error || {};
+                var err = jqXHR.responseJSON && jqXHR.responseJSON.error || {};
                 done(new Error(err.message || 'error'));
             };
         }
