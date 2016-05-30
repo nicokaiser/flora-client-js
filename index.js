@@ -171,7 +171,8 @@
                 try {
                     response = JSON.parse(str);
                 } catch (e) {
-                    return done(new Error('Couldn\'t parse response'));
+                    // eslint-disable-next-line consistent-return
+                    return done(new Error('Couldn\'t parse response: ' + e.message));
                 }
 
                 if (res.statusCode < 400) done(null, response);
