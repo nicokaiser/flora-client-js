@@ -39,7 +39,7 @@
     "mocha": "^3.2.0",
     "mocha-bamboo-reporter": "^1.1.0",
     "nock": "^9.0.0",
-    "phantomjs": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.13",
     "requirejs": "^2.1.17",
     "sinon": "^1.17.0"
   }
