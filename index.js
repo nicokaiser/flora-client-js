@@ -2,15 +2,15 @@
 (function (root, factory) {
     'use strict';
     if (typeof module === 'object' && module.exports) module.exports = factory();
-    else if (typeof define === 'function' && define.amd) define(['jquery'], factory);
-    else root.FloraClient = factory(root.jQuery);
-}(this, function factory($) {
+    else if (typeof define === 'function' && define.amd) define(factory);
+    else root.FloraClient = factory();
+}(this, function factory() {
     'use strict';
 
     /**
      * Simple client to access Flora APIs.
      *
-     * Uses {@link http://api.jquery.com/jQuery.ajax/|jQuery.ajax} in browsers and
+     * Uses {@link https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest|XMLHttpRequest} in browsers and
      * {@link https://nodejs.org/api/http.html|http}/{@link https://nodejs.org/api/https.html|https} module in Node.js
      * to run requests against Flora instance.
      *
@@ -118,22 +118,29 @@
 
     // Execute HTTP request in a browser
     FloraClient.prototype._browserRequest = function (cfg, done) {
-        var opts = {method: cfg.httpMethod, headers: cfg.headers};
+        var xhr = new XMLHttpRequest();
 
-        opts.data = cfg.jsonData ? cfg.jsonData : cfg.params;
+        xhr.open(cfg.httpMethod, cfg.url);
+        xhr.onload = function () {
+            var response;
 
-        if (typeof done === 'function') {
-            opts.success = function (response) {
-                done(null, response);
-            };
-            opts.error = function (jqXHR) {
-                //noinspection JSUnresolvedVariable
-                var err = jqXHR.responseJSON && jqXHR.responseJSON.error || {};
-                done(new Error(err.message || 'error'));
-            };
+            if (typeof done !== 'function') return;
+
+            try {
+                response = JSON.parse(xhr.responseText);
+            } catch (e) {
+                return done(e);
+            }
+
+            if (xhr.status === 200) done(null, response);
+            else done(new Error(response.error && response.error.message ? response.error.message : 'error'));
+        };
+
+        if (cfg.httpMethod !== 'POST') xhr.send();
+        else {
+            xhr.setRequestHeader('Content-Type', 'application/' + (cfg.jsonData ? 'json' : 'x-www-form-urlencoded'));
+            xhr.send(cfg.params ? urlencode(cfg.params) : cfg.jsonData);
         }
-
-        $.ajax(cfg.url, opts);
     };
 
     // Execute HTTP request in Node.js
@@ -187,7 +194,7 @@
 
     // Small helper to hide implementation details from execute method
     FloraClient.prototype._request = (function () { // use IIFE to avoid environment checks on each call
-        return FloraClient.prototype[($ ? '_browserRequest' : '_nodeRequest')];
+        return FloraClient.prototype[(typeof window === 'object' ? '_browserRequest' : '_nodeRequest')];
     })();
 
     function getHttpMethod(requestOpts) {

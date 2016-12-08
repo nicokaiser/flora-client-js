@@ -65,8 +65,7 @@ module.exports = function (grunt) {
                     files: [
                         'test/test-main.js',
                         { pattern: 'index.js', included: false },
-                        { pattern: 'test/flora-client-browser.spec.js', included: false },
-                        { pattern: 'node_modules/jquery/dist/jquery.js', included: false }
+                        { pattern: 'test/flora-client-browser.spec.js', included: false }
                     ]
                 }
             },

@@ -6,8 +6,7 @@ require.config({
     baseUrl: '/base',
 
     paths: {
-        'flora-client': 'index',
-        jquery: 'node_modules/jquery/dist/jquery'
+        'flora-client': 'index'
     },
 
     // dynamically load all test files
