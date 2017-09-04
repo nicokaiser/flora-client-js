@@ -119,7 +119,8 @@ describe('Flora node client', function () {
         it('should post content in data key as JSON', function (done) {
             req = nock(url)
                 .matchHeader('Content-Type', /application\/json/)
-                .post('/article/?action=create', '{"title":"Lorem Ipsum","author":{"id":1337}}')
+                .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
+                .query({action: 'create'})
                 .reply(200, response);
 
             api.execute({
@@ -236,6 +237,31 @@ describe('Flora node client', function () {
                 .reply(200, {});
 
             api.execute({resource: 'user', id: 1337, param: 'xyz'}, done);
+        });
+
+        it('should send selected parameters as part of the querystring', function (done) {
+            var api = new FloraClient({
+                url: url,
+                defaultParams: {client_id: 1},
+                forceGetParams: ['client_id']
+            });
+
+            req = nock(url)
+                .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
+                .query({
+                    client_id: 1,
+                    action: 'create'
+                })
+                .reply(200, {});
+
+            api.execute({
+                resource: 'article',
+                action: 'create',
+                data: {
+                    title: 'Lorem Ipsum',
+                    author: { id: 1337 }
+                }
+            }, done);
         });
     });
 

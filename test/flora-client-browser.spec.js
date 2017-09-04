@@ -149,6 +149,27 @@ define(['flora-client'], function (FloraClient) {
 
                     expect(requests[0].url).to.contain('/user/1337?param=xyz');
                 });
+
+                it('should send selected parameters as part of the querystring', function () {
+                    var api = new FloraClient({
+                        url: url,
+                        defaultParams: {client_id: 1},
+                        forceGetParams: ['client_id']
+                    });
+
+                    api.execute({
+                        resource: 'article',
+                        action: 'create',
+                        data: {
+                            title: 'Lorem Ipsum',
+                            author: { id: 1337 }
+                        }
+                    });
+
+                    var request = requests[0];
+                    expect(request.url).to.contain('client_id=1');
+                    expect(request.requestBody).to.equal('{"title":"Lorem Ipsum","author":{"id":1337}}');
+                });
             });
 
             describe('HTTP method', function () {

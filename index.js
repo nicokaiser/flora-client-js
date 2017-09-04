@@ -17,6 +17,7 @@
      * @param {Object}  options                 - Client config options
      * @param {string}  options.url             - URL of Flora instance
      * @param {?Object} options.defaultParams   - Parameters added to each request automatically
+     * @param {?Array}  options.forceGetParams  - Parameters always send as part of the query string
      * @constructor
      */
     function FloraClient(options) {
@@ -38,6 +39,10 @@
                     this.defaultParams[key] = options.defaultParams[key];
                 }
             }
+        }
+
+        if (options.forceGetParams && Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
+            this.forceGetParams = options.forceGetParams;
         }
     }
 
@@ -67,7 +72,9 @@
                 params: {},
                 headers: {}
             },
+            param,
             key,
+            getParams = {},
             specialKeys = ['resource', 'id', 'cache', 'data'],
             skipCache = request.hasOwnProperty('cache') && !!request.cache === false;
 
@@ -100,15 +107,29 @@
             }
         }
 
+        if (this.forceGetParams) {
+            for (i = 0, l = this.forceGetParams.length; i < l; ++i) {
+                param = this.forceGetParams[i];
+                if (!opts.params[param]) continue;
+                getParams[param] = opts.params[param];
+                delete opts.params[param];
+            }
+        }
+
         opts.httpMethod = !request.hasOwnProperty('httpMethod') ? getHttpMethod(opts) : request.httpMethod;
 
         if (opts.params.action && opts.params.action === 'retrieve') delete opts.params.action;
         if (typeof opts.params === 'object' && !isEmpty(opts.params)) {
             if (opts.jsonData || opts.httpMethod === 'GET') {
-                opts.url += '?' + urlencode(getSortedParams(opts.params));
+                for (param in opts.params) {
+                    if (!opts.params.hasOwnProperty(param)) continue;
+                    getParams[param] = opts.params[param];
+                }
                 delete opts.params;
             }
         }
+
+        if (!isEmpty(getParams)) opts.url += '?' + urlencode(getSortedParams(getParams));
 
         // add cache breaker to bypass HTTP caching
         if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + (new Date()).getTime();
