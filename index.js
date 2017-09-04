@@ -7,6 +7,10 @@
 }(this, function factory() {
     'use strict';
 
+    function has(obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+    }
+
     /**
      * Simple client to access Flora APIs.
      *
@@ -35,7 +39,7 @@
         if (options.defaultParams && typeof options.defaultParams === 'object') {
             this.defaultParams = {};
             for (var key in options.defaultParams) {
-                if (options.defaultParams.hasOwnProperty(key)) {
+                if (has(options.defaultParams, key)) {
                     this.defaultParams[key] = options.defaultParams[key];
                 }
             }
@@ -76,7 +80,7 @@
             key,
             getParams = {},
             specialKeys = ['resource', 'id', 'cache', 'data'],
-            skipCache = request.hasOwnProperty('cache') && !!request.cache === false;
+            skipCache = has(request, 'cache') && !!request.cache === false;
 
         opts.url = this.url + request.resource + '/' + (request.id || '');
 
@@ -95,13 +99,13 @@
         }
 
         for (key in request) {
-            if (request.hasOwnProperty(key)) opts.params[key] = request[key];
+            if (has(request, key)) opts.params[key] = request[key];
         }
 
         if (this.defaultParams) {
             for (key in this.defaultParams) {
                 //noinspection JSUnfilteredForInLoop
-                if (!opts.params.hasOwnProperty(key)) { //noinspection JSUnfilteredForInLoop
+                if (!has(opts.params, key)) { //noinspection JSUnfilteredForInLoop
                     opts.params[key] = this.defaultParams[key];
                 }
             }
@@ -116,13 +120,13 @@
             }
         }
 
-        opts.httpMethod = !request.hasOwnProperty('httpMethod') ? getHttpMethod(opts) : request.httpMethod;
+        opts.httpMethod = !has(request, 'httpMethod') ? getHttpMethod(opts) : request.httpMethod;
 
         if (opts.params.action && opts.params.action === 'retrieve') delete opts.params.action;
         if (typeof opts.params === 'object' && !isEmpty(opts.params)) {
             if (opts.jsonData || opts.httpMethod === 'GET') {
                 for (param in opts.params) {
-                    if (!opts.params.hasOwnProperty(param)) continue;
+                    if (!has(opts.params, param)) continue;
                     getParams[param] = opts.params[param];
                 }
                 delete opts.params;
@@ -221,7 +225,7 @@
     function getHttpMethod(requestOpts) {
         if ((requestOpts.params && requestOpts.params.action && requestOpts.params.action !== 'retrieve')
             || urlencode(requestOpts.params).length > 2000
-            || requestOpts.hasOwnProperty('jsonData')) return 'POST';
+            || has(requestOpts, 'jsonData')) return 'POST';
         return 'GET';
     }
 
