@@ -77,7 +77,7 @@
                 headers: {}
             },
             param,
-            key,
+            key, i, l,
             getParams = {},
             specialKeys = ['resource', 'id', 'cache', 'data'],
             skipCache = has(request, 'cache') && !!request.cache === false;
@@ -94,7 +94,7 @@
         }
 
         // remove special keys from request before assembling Flora request parameters
-        for (var i = 0, l = specialKeys.length; i < l; ++i) {
+        for (i = 0, l = specialKeys.length; i < l; ++i) {
             delete request[specialKeys[i]];
         }
 
