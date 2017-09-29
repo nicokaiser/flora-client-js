@@ -262,6 +262,39 @@ define(['flora-client'], function (FloraClient) {
             });
         });
 
+        describe('timeouts', function () {
+            var xhr, clock, spy, error;
+
+            beforeEach(function () {
+                spy = sinon.spy();
+                clock = sinon.useFakeTimers();
+                xhr = sinon.useFakeXMLHttpRequest();
+            });
+
+            afterEach(function () {
+                clock.restore();
+                xhr.restore();
+            });
+
+            it('should use default timeout', function () {
+                api.execute({ resource: 'user' }, spy);
+                clock.tick(18000);
+
+                error = spy.args[0][0];
+                expect(error).to.be.instanceOf(Error)
+                    .and.to.have.property('message', 'Request timed out after ' + api.timeout + ' milliseconds');
+            });
+
+            it('should use custom timeout', function () {
+                (new FloraClient({ url: url, timeout: 3000 })).execute({ resource: 'user' }, spy);
+                clock.tick(5000);
+
+                error = spy.args[0][0];
+                expect(error).to.be.instanceOf(Error)
+                    .and.to.have.property('message', 'Request timed out after 3000 milliseconds');
+            });
+        });
+
         describe('formats', function () {
             it('should trigger an error on non-JSON formats', function (done) {
                 api.execute({ resource: 'user', format: 'pdf' }, function (err) {

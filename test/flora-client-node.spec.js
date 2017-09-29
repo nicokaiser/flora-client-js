@@ -353,6 +353,38 @@ describe('Flora node client', function () {
         });
     });
 
+    describe('timeouts', function () {
+        it('should use default request timeout', function (done) {
+            req = nock(url)
+                .get('/user/')
+                .socketDelay(20000)
+                .reply(200, {});
+
+            api.execute({ resource: 'user' }, function (err) {
+                expect(err)
+                    .to.be.instanceOf(Error)
+                    .and.to.have.property('code', 'ECONNRESET');
+                done();
+            });
+        });
+
+        it('should use configurable request timeout', function (done) {
+            var timeoutApi = new FloraClient({ url: url, timeout: 5000 });
+
+            req = nock(url)
+                .get('/user/')
+                .socketDelay(6000)
+                .reply(200, {});
+
+            timeoutApi.execute({ resource: 'user' }, function (err) {
+                expect(err)
+                    .to.be.instanceOf(Error)
+                    .and.to.have.property('code', 'ECONNRESET');
+                done();
+            });
+        });
+    });
+
     it('should return API error on connection issues', function (done) {
         // nock can't fake request errors at the moment, so we have to make a real request to nonexistent host
         var nonExistentApi = new FloraClient({ url: 'http://non-existent.api.localhost' });

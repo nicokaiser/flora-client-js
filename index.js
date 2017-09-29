@@ -22,6 +22,7 @@
      * @param {string}  options.url             - URL of Flora instance
      * @param {?Object} options.defaultParams   - Parameters added to each request automatically
      * @param {?Array}  options.forceGetParams  - Parameters always send as part of the query string
+     * @param {?number} options.timeout         - Timeout in milliseconds (default: 15000)
      * @constructor
      */
     function FloraClient(options) {
@@ -35,6 +36,7 @@
          * @readonly
          */
         this.url = options.url.substr(-1) === '/' ? options.url : options.url + '/';
+        this.timeout = options.timeout && !isNaN(Number(options.timeout)) ? parseInt(options.timeout, 10) : 15000;
 
         if (options.defaultParams && typeof options.defaultParams === 'object') {
             this.defaultParams = {};
@@ -144,9 +146,16 @@
     // Execute HTTP request in a browser
     FloraClient.prototype._browserRequest = function (cfg, done) {
         var xhr = new XMLHttpRequest();
+        var scope = this;
 
         xhr.open(cfg.httpMethod, cfg.url);
-        xhr.onload = function () {
+
+        xhr.timeout = scope.timeout;
+        xhr.addEventListener('timeout', function () {
+            done(new Error('Request timed out after ' + scope.timeout + ' milliseconds'));
+        });
+
+        xhr.addEventListener('load', function () {
             var response;
 
             if (typeof done !== 'function') return;
@@ -159,7 +168,7 @@
 
             if (xhr.status === 200) done(null, response);
             else done(new Error(response.error && response.error.message ? response.error.message : 'error'));
-        };
+        });
 
         if (cfg.httpMethod !== 'POST') xhr.send();
         else {
@@ -209,6 +218,10 @@
                 if (res.statusCode < 400) done(null, response);
                 else done(new Error(response.error && response.error.message || 'error'));
             });
+        });
+
+        req.setTimeout(this.timeout, function () {
+            req.abort();
         });
 
         if (postBody) req.write(postBody);
