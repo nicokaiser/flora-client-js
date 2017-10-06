@@ -2,12 +2,6 @@
 
 module.exports = function (grunt) {
     grunt.initConfig({
-        env: {
-            karma: { // use PhantomJS NPM version
-                PHANTOMJS_BIN: 'node_modules/.bin/phantomjs'
-            }
-        },
-
         mkdir: {
             build: { // mocha bamboo reporter does not create directory automatically
                 options: {
@@ -113,8 +107,8 @@ module.exports = function (grunt) {
     grunt.registerTask('node-cov', 'mocha_istanbul:coverageBamboo');
 
     // browser tests
-    grunt.registerTask('test-browser', ['env:karma', 'karma:browserGlobalVariable', 'karma:browserAMD']);
-    grunt.registerTask('test-browser-bamboo', ['env:karma', 'karma:browserAMDBamboo']);
+    grunt.registerTask('test-browser', ['karma:browserGlobalVariable', 'karma:browserAMD']);
+    grunt.registerTask('test-browser-bamboo', 'karma:browserAMDBamboo');
 
     // create browser versions
     grunt.registerTask('dist', ['denodify:floraClient', 'uglify:floraClient']);
