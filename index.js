@@ -23,6 +23,7 @@
      * @param {?Object} options.defaultParams                           - Parameters added to each request automatically
      * @param {?Array}  [options.forceGetParams=['client_id', 'action']]- Parameters are always send in query string
      * @param {?number} [options.timeout=15000]                         - Timeout in milliseconds
+     * @param {?function} options.authenticate                          - Authentication handler (Promise)
      * @constructor
      */
     function FloraClient(options) {
@@ -51,6 +52,10 @@
         if (options.forceGetParams && Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
             Array.prototype.push.apply(this.forceGetParams, options.forceGetParams);
         }
+
+        if (options.authenticate && typeof options.authenticate === 'function') {
+            this.authenticate = options.authenticate;
+        }
     }
 
     /**
@@ -73,11 +78,23 @@
      * @return {Promise}
      */
     FloraClient.prototype.execute = function (request) {
+        if (request.authenticate) {
+            if (!this.authenticate) {
+                return Promise.reject(new Error('Authenticated requests require an authentication handler in the constructor'));
+            }
+
+            return this.authenticate(request).then(() => this._execute(request));
+        }
+
+        return this._execute(request);
+    };
+
+    FloraClient.prototype._execute = function (request) {
         var opts = {
                 resource: request.resource,
                 id: request.id,
                 params: {},
-                headers: {}
+                headers: request.httpHeaders || {}
             },
             param,
             key, i, l,
