@@ -27,7 +27,7 @@
     "grunt-mocha-istanbul": "^5.0.1",
     "grunt-mocha-test": "^0.13.0",
     "istanbul": "^0.4.3",
-    "karma": "^1.7.1",
+    "karma": "^2.0.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.0.1",
@@ -38,10 +38,10 @@
     "karma-sinon": "^1.0.4",
     "karma-tamtam-bamboo-reporter": "^1.0.1",
     "load-grunt-tasks": "^3.1.0",
-    "mocha": "^3.5.3",
+    "mocha": "^5.0.4",
     "mocha-bamboo-reporter": "^1.1.0",
     "nock": "^9.0.22",
-    "puppeteer": "^0.11.0",
+    "puppeteer": "^1.1.1",
     "requirejs": "^2.3.5",
     "sinon": "^4.0.0"
   }
