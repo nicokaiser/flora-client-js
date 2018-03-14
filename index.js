@@ -75,6 +75,7 @@
      * @param {Object=}             request.data         - Send data as JSON
      * @param {boolean=}            request.cache        - Use HTTP caching (default: true)
      * @param {string=}             request.httpMethod   - Explicitly overwrite HTTP method
+     * @param {boolean=}            request.authenticate - Use the authentication handler on this request (default: false)
      * @return {Promise}
      */
     FloraClient.prototype.execute = function (request) {
