@@ -26,7 +26,11 @@ describe('Flora node client', function () {
                 .get('/user/')
                 .reply(200, response);
 
-            api.execute({ resource: 'user' }, done);
+            api.execute({ resource: 'user' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add id to path', function (done) {
@@ -34,7 +38,11 @@ describe('Flora node client', function () {
                 .get('/user/1337')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', id: 1337 }, done);
+            api.execute({ resource: 'user', id: 1337 })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should treat action=retrieve as standard (and not transmit it)', function (done) {
@@ -42,7 +50,11 @@ describe('Flora node client', function () {
                 .get('/user/')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', action: 'retrieve' }, done);
+            api.execute({ resource: 'user', action: 'retrieve' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add action parameter', function (done) {
@@ -50,7 +62,11 @@ describe('Flora node client', function () {
                 .post('/user/1337', /action=update/)
                 .reply(200, response);
 
-            api.execute({ resource: 'user', id: 1337, action: 'update'}, done);
+            api.execute({ resource: 'user', id: 1337, action: 'update'})
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add select parameter to query', function (done) {
@@ -58,10 +74,11 @@ describe('Flora node client', function () {
                 .get('/user/?select=id%2Clastname%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D')
                 .reply(200, response);
 
-            api.execute({
-                resource: 'user',
-                select: 'id,lastname,address.city,comments(order=ts:desc)[id,body]'
-            }, done);
+            api.execute({ resource: 'user', select: 'id,lastname,address.city,comments(order=ts:desc)[id,body]' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add filter parameter to query', function (done) {
@@ -69,10 +86,11 @@ describe('Flora node client', function () {
                 .get('/user/?filter=address%5Bcountry.iso2%3DDE%20AND%20city%3DMunich%5D%20OR%20profession%3DTrader')
                 .reply(200, response);
 
-            api.execute({
-                resource: 'user',
-                filter: 'address[country.iso2=DE AND city=Munich] OR profession=Trader'
-            }, done);
+            api.execute({ resource: 'user', filter: 'address[country.iso2=DE AND city=Munich] OR profession=Trader' })
+                .then(function () {
+                    done();
+                })
+                .catch(done)
         });
 
         it('should add order parameter to query', function (done) {
@@ -80,7 +98,11 @@ describe('Flora node client', function () {
                 .get('/user/?order=lastname%3Aasc%2Cfirstname%3Adesc')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', order: 'lastname:asc,firstname:desc' }, done);
+            api.execute({ resource: 'user', order: 'lastname:asc,firstname:desc' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add limit parameter to query', function (done) {
@@ -88,7 +110,11 @@ describe('Flora node client', function () {
                 .get('/user/?limit=15')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', limit: 15 }, done);
+            api.execute({ resource: 'user', limit: 15 })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add page parameter to query', function (done) {
@@ -96,7 +122,11 @@ describe('Flora node client', function () {
                 .get('/user/?page=2')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', page: 2 }, done);
+            api.execute({ resource: 'user', page: 2 })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add search parameter to query', function (done) {
@@ -104,7 +134,11 @@ describe('Flora node client', function () {
                 .get('/user/?search=full%20text%20search')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', search: 'full text search' }, done);
+            api.execute({ resource: 'user', search: 'full text search' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should add cache breaker parameter to query', function (done) {
@@ -113,24 +147,34 @@ describe('Flora node client', function () {
                 .get('/user/?_=xxx')
                 .reply(200, response);
 
-            api.execute({ resource: 'user', cache: false }, done);
+            api.execute({ resource: 'user', cache: false })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should post content in data key as JSON', function (done) {
-            req = nock(url)
-                .matchHeader('Content-Type', /application\/json/)
-                .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
-                .query({action: 'create'})
-                .reply(200, response);
-
-            api.execute({
+            var floraReq = {
                 resource: 'article',
                 action: 'create',
                 data: {
                     title: 'Lorem Ipsum',
                     author: { id: 1337 }
                 }
-            }, done);
+            };
+
+            req = nock(url)
+                .matchHeader('Content-Type', /application\/json/)
+                .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
+                .query({action: 'create'})
+                .reply(200, response);
+
+            api.execute(floraReq)
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         describe('HTTP method', function () {
@@ -139,7 +183,11 @@ describe('Flora node client', function () {
                     .get('/user/1337')
                     .reply(200, response);
 
-                api.execute({ resource: 'user', id: 1337, action: 'retrieve' }, done);
+                api.execute({ resource: 'user', id: 1337, action: 'retrieve' })
+                    .then(function () {
+                        done();
+                    })
+                    .catch(done);
             });
 
             it('should use GET if action is not set', function (done) {
@@ -147,7 +195,11 @@ describe('Flora node client', function () {
                     .get('/user/1337')
                     .reply(200, response);
 
-                api.execute({ resource: 'user', id: 1337 }, done);
+                api.execute({ resource: 'user', id: 1337 })
+                    .then(function () {
+                        done();
+                    })
+                    .catch(done);
             });
 
             it('should use POST for other actions than "retrieve"', function (done) {
@@ -155,7 +207,11 @@ describe('Flora node client', function () {
                     .post('/user/1337', /action=lock/)
                     .reply(200, response);
 
-                api.execute({ resource: 'user', id: 1337, action: 'lock' }, done);
+                api.execute({ resource: 'user', id: 1337, action: 'lock' })
+                    .then(function () {
+                        done();
+                    })
+                    .catch(done);
             });
 
             it('should explicitly overwrite method by parameter', function (done) {
@@ -163,26 +219,32 @@ describe('Flora node client', function () {
                     .head('/user/1337')
                     .reply(200, response);
 
-                api.execute({ resource: 'user', id: 1337, httpMethod: 'HEAD' }, done);
+                api.execute({ resource: 'user', id: 1337, httpMethod: 'HEAD' })
+                    .then(function () {
+                        done();
+                    })
+                    .catch(done);
             });
 
             it('should switch to POST if querystring gets too large', function (done) {
-                function repeat(str, num) {
-                    return (new Array(parseInt(num, 10))).join(str);
-                }
+                var floraReq = {
+                    resource: 'user',
+                    select: 'select'.repeat(150),
+                    filter: 'filter'.repeat(150),
+                    search: 'search term'.repeat(150),
+                    limit: 100,
+                    page: 10
+                };
 
                 req = nock(url)
                     .post('/user/', /select=(select){100,}/)
                     .reply(200, response);
 
-                api.execute({
-                    resource: 'user',
-                    select: repeat('select', 150),
-                    filter: repeat('filter', 150),
-                    search: repeat('search term', 150),
-                    limit: 100,
-                    page: 10
-                }, done);
+                api.execute(floraReq)
+                    .then(function () {
+                        done();
+                    })
+                    .catch(done);
             });
         });
     });
@@ -197,12 +259,7 @@ describe('Flora node client', function () {
                 'search=John',
                 'select=id%2Cfirstname%2Clastname'
             ].join('&');
-
-            req = nock(url)
-                .get('/user/?' + queryString)
-                .reply(200, {});
-
-            api.execute({
+            var floraReq = {
                 resource: 'user',
                 search: 'John',
                 page: 3,
@@ -210,7 +267,17 @@ describe('Flora node client', function () {
                 order: 'lastname:desc',
                 select: 'id,firstname,lastname',
                 filter: 'address.country.iso2=AT'
-            }, done);
+            };
+
+            req = nock(url)
+                .get('/user/?' + queryString)
+                .reply(200, {});
+
+            api.execute(floraReq)
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should support default parameters', function (done) {
@@ -223,7 +290,11 @@ describe('Flora node client', function () {
                 .get('/user/1337?param=abc')
                 .reply(200, {});
 
-            api.execute({resource: 'user', id: 1337}, done);
+            api.execute({resource: 'user', id: 1337})
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should use request parameter if default exists with same name', function (done) {
@@ -236,7 +307,11 @@ describe('Flora node client', function () {
                 .get('/user/1337?param=xyz')
                 .reply(200, {});
 
-            api.execute({resource: 'user', id: 1337, param: 'xyz'}, done);
+            api.execute({resource: 'user', id: 1337, param: 'xyz'})
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
 
         it('should send selected parameters as part of the querystring', function (done) {
@@ -245,6 +320,14 @@ describe('Flora node client', function () {
                 defaultParams: {client_id: 1},
                 forceGetParams: ['client_id']
             });
+            var floraReq = {
+                resource: 'article',
+                action: 'create',
+                data: {
+                    title: 'Lorem Ipsum',
+                    author: { id: 1337 }
+                }
+            };
 
             req = nock(url)
                 .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
@@ -254,42 +337,31 @@ describe('Flora node client', function () {
                 })
                 .reply(200, {});
 
-            api.execute({
-                resource: 'article',
-                action: 'create',
-                data: {
-                    title: 'Lorem Ipsum',
-                    author: { id: 1337 }
-                }
-            }, done);
+            api.execute(floraReq)
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
     });
 
-    describe('callbacks', function () {
-        it('should be an optional parameter', function (done) {
-            req = nock(url)
-                .get('/user/')
-                .reply(200, {});
-
-            api.execute({ resource: 'user' });
-            setTimeout(done, 30);
-        });
-
-        it('should return API response as second parameter', function (done) {
+    describe('response', function () {
+        it('should resolve API response', function (done) {
             var data = [{ id: 1337, firstname: 'John', lastname: 'Doe' }];
 
             req = nock(url)
                 .get('/user/')
                 .reply(200, { meta: {}, data: data });
 
-            api.execute({ resource: 'user' }, function (err, response) {
-                expect(err).to.equal(null);
-                expect(response.data).to.eql(data);
-                done();
-            });
+            api.execute({ resource: 'user' })
+                .then(function (response) {
+                    expect(response.data).to.eql(data);
+                    done();
+                })
+                .catch(done);
         });
 
-        it('should return API error as first parameter', function (done) {
+        it('should reject with error', function (done) {
             req = nock(url)
                 .get('/user/')
                 .reply(500, {
@@ -300,11 +372,15 @@ describe('Flora node client', function () {
                     }
                 });
 
-            api.execute({ resource: 'user' }, function (err) {
-                expect(err).to.be.instanceof(Error);
-                expect(err.message).to.equal('foobar');
-                done();
-            });
+            api.execute({ resource: 'user' })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err).to.be.instanceof(Error);
+                    expect(err.message).to.equal('foobar');
+                    done();
+                });
         });
 
         it('should trigger an error if JSON cannot be parsed', function (done) {
@@ -312,20 +388,28 @@ describe('Flora node client', function () {
                 .get('/user/')
                 .reply(200, 'foobar');
 
-            api.execute({ resource: 'user' }, function (err) {
-                expect(err).to.be.instanceOf(Error);
-                done();
-            });
+            api.execute({ resource: 'user' })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err).to.be.instanceOf(Error);
+                    done();
+                });
         });
     });
 
     describe('formats', function () {
         it('should trigger an error on non-JSON formats', function (done) {
-            req = api.execute({ resource: 'user', format: 'pdf' }, function (err) {
-                expect(err).to.be.instanceof(Error);
-                expect(err.message).to.equal('Only JSON format supported');
-                done();
-            });
+            api.execute({ resource: 'user', format: 'pdf' })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err).to.be.instanceof(Error);
+                    expect(err.message).to.equal('Only JSON format supported');
+                    done();
+                });
         });
     });
 
@@ -338,7 +422,11 @@ describe('Flora node client', function () {
                 .get('/user/')
                 .reply(200, {});
 
-            secureApi.execute({ resource: 'user' }, done);
+            secureApi.execute({ resource: 'user' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
     });
 
@@ -349,7 +437,11 @@ describe('Flora node client', function () {
                 .get('/user/')
                 .reply(200, {});
 
-            api.execute({ resource: 'user' }, done);
+            api.execute({ resource: 'user' })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
     });
 
@@ -360,12 +452,16 @@ describe('Flora node client', function () {
                 .socketDelay(20000)
                 .reply(200, {});
 
-            api.execute({ resource: 'user' }, function (err) {
-                expect(err)
-                    .to.be.instanceOf(Error)
-                    .and.to.have.property('code', 'ECONNRESET');
-                done();
-            });
+            api.execute({ resource: 'user' })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err)
+                        .to.be.instanceOf(Error)
+                        .and.to.have.property('code', 'ECONNRESET');
+                    done();
+                });
         });
 
         it('should use configurable request timeout', function (done) {
@@ -376,12 +472,15 @@ describe('Flora node client', function () {
                 .socketDelay(6000)
                 .reply(200, {});
 
-            timeoutApi.execute({ resource: 'user' }, function (err) {
-                expect(err)
-                    .to.be.instanceOf(Error)
-                    .and.to.have.property('code', 'ECONNRESET');
-                done();
-            });
+            timeoutApi.execute({ resource: 'user' })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.have.property('code', 'ECONNRESET');
+                    done();
+                });
         });
     });
 
@@ -390,10 +489,14 @@ describe('Flora node client', function () {
         var nonExistentApi = new FloraClient({ url: 'http://non-existent.api.localhost' });
 
         nock.enableNetConnect();
-        nonExistentApi.execute({ resource: 'user' }, function (err) {
-            expect(err).to.be.instanceof(Error);
-            done();
-        });
+        nonExistentApi.execute({ resource: 'user' })
+            .then(function () {
+                done(new Error('Expected promise to reject'));
+            })
+            .catch(function (err) {
+                expect(err).to.be.instanceof(Error);
+                done();
+            });
         nock.disableNetConnect();
     });
 });

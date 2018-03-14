@@ -69,9 +69,9 @@
      * @param {Object=}             request.data         - Send data as JSON
      * @param {boolean=}            request.cache        - Use HTTP caching (default: true)
      * @param {string=}             request.httpMethod   - Explicitly overwrite HTTP method
-     * @param {function=}           done
+     * @return {Promise}
      */
-    FloraClient.prototype.execute = function (request, done) {
+    FloraClient.prototype.execute = function (request) {
         var opts = {
                 resource: request.resource,
                 id: request.id,
@@ -87,7 +87,7 @@
         opts.url = this.url + request.resource + '/' + (request.id || '');
 
         if (request.format && String(request.format).toLocaleLowerCase() !== 'json') {
-            return done(new Error('Only JSON format supported'));
+            return Promise.reject(new Error('Only JSON format supported'));
         }
 
         if (request.data) { // post property as JSON
@@ -140,53 +140,53 @@
         // add cache breaker to bypass HTTP caching
         if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + (new Date()).getTime();
 
-        this._request(opts, done);
+        return this._request(opts);
     };
 
     // Execute HTTP request in a browser
-    FloraClient.prototype._browserRequest = function (cfg, done) {
+    FloraClient.prototype._browserRequest = function (cfg) {
         var xhr = new XMLHttpRequest();
         var scope = this;
 
         xhr.open(cfg.httpMethod, cfg.url);
 
         xhr.timeout = scope.timeout;
-        xhr.addEventListener('timeout', function () {
-            done(new Error('Request timed out after ' + scope.timeout + ' milliseconds'));
-        });
-
-        xhr.addEventListener('load', function () {
-            var response;
-
-            if (typeof done !== 'function') return;
-
-            try {
-                response = JSON.parse(xhr.responseText);
-            } catch (e) {
-                return done(e);
-            }
-
-            if (xhr.status === 200) done(null, response);
-            else done(new Error(response.error && response.error.message ? response.error.message : 'error'));
-        });
 
         if (cfg.httpMethod !== 'POST') xhr.send();
         else {
             xhr.setRequestHeader('Content-Type', 'application/' + (cfg.jsonData ? 'json' : 'x-www-form-urlencoded'));
             xhr.send(cfg.params ? urlencode(cfg.params) : cfg.jsonData);
         }
+
+        return new Promise(function (resolve, reject) {
+            xhr.addEventListener('timeout', function () {
+                reject(new Error('Request timed out after ' + scope.timeout + ' milliseconds'));
+            });
+
+            xhr.addEventListener('load', function () {
+                var response;
+
+                try {
+                    response = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    return reject(e);
+                }
+
+                if (xhr.status === 200) resolve(response);
+                else reject(new Error(response.error && response.error.message ? response.error.message : 'error'));
+            });
+        });
     };
 
     // Execute HTTP request in Node.js
-    FloraClient.prototype._nodeRequest = function (cfg, done) {
+    FloraClient.prototype._nodeRequest = function (cfg) {
         var protocol = require('http' + (this.url.indexOf('http:') !== -1 ? '' : 's')),
             url = require('url'),
             path = require('path');
 
-        var hasCallback = typeof done === 'function',
+        var scope = this,
             opts = url.parse(cfg.url),
-            postBody,
-            req;
+            postBody;
 
         opts.headers = cfg.headers;
         opts.headers['Referer'] = process.argv.length > 0 ? 'file://' + path.resolve(process.argv[1]) : '';
@@ -196,38 +196,38 @@
 
         opts.method = cfg.httpMethod;
 
-        req = protocol.request(opts, function onFloraResponse(res) {
-            var str = '';
+        return new Promise(function (resolve, reject) {
+            var req = protocol.request(opts, function onFloraResponse(res) {
+                var str = '';
 
-            res.on('data', function (chunk) {
-                str += chunk;
+                res.on('data', function (chunk) {
+                    str += chunk;
+                });
+
+                res.on('end', function () {
+                    var response;
+
+                    try {
+                        response = JSON.parse(str);
+                    } catch (e) {
+                        // eslint-disable-next-line consistent-return
+                        return reject(new Error('Couldn\'t parse response: ' + e.message));
+                    }
+
+                    if (res.statusCode < 400) resolve(response);
+                    else reject(new Error(response.error && response.error.message || 'error'));
+                });
             });
 
-            res.on('end', function () {
-                var response;
-
-                if (!hasCallback) return;
-
-                try {
-                    response = JSON.parse(str);
-                } catch (e) {
-                    // eslint-disable-next-line consistent-return
-                    return done(new Error('Couldn\'t parse response: ' + e.message));
-                }
-
-                if (res.statusCode < 400) done(null, response);
-                else done(new Error(response.error && response.error.message || 'error'));
+            req.setTimeout(scope.timeout, function () {
+                req.abort();
             });
+
+            if (postBody) req.write(postBody);
+
+            req.on('error', reject);
+            req.end();
         });
-
-        req.setTimeout(this.timeout, function () {
-            req.abort();
-        });
-
-        if (postBody) req.write(postBody);
-
-        if (hasCallback) req.on('error', done);
-        req.end();
     };
 
     // Small helper to hide implementation details from execute method

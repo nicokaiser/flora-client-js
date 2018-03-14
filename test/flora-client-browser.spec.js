@@ -1,3 +1,4 @@
+
 /*global define, describe, it, beforeEach, afterEach, expect, sinon */
 define(['flora-client'], function (FloraClient) {
     'use strict';
@@ -212,7 +213,7 @@ define(['flora-client'], function (FloraClient) {
             });
         });
 
-        describe('callbacks', function () {
+        describe('return value', function () {
             var server;
 
             beforeEach(function () {
@@ -223,27 +224,31 @@ define(['flora-client'], function (FloraClient) {
                 server.restore();
             });
 
-            it('should be an optional parameter', function (done) {
+            it('should be a promise', function (done) {
                 server.respondWith([200, { 'Content-Type': 'application/json' }, '{}']);
-                api.execute({ resource: 'user' });
+                const response = api.execute({ resource: 'user' });
+                expect(response).to.be.instanceof(Promise);
                 server.respond();
-                setTimeout(done, 30);
+                setTimeout(done, 50);
             });
 
-            it('should return API response as second parameter', function (done) {
-                var data = [{ id: 1337, firstname: 'John', lastname: 'Doe' }],
-                    serverResponse = JSON.stringify({ meta: {}, data: data });
+            it('should resolve promise with response', function (done) {
+                var data = [{ id: 1337, firstname: 'John', lastname: 'Doe' }];
+                var serverResponse = JSON.stringify({ meta: {}, data: data });
 
                 server.respondWith([200, { 'Content-Type': 'application/json' }, serverResponse]);
-                api.execute({ resource: 'user' }, function (err, response) {
-                    expect(err).to.equal(null);
-                    expect(response.data).to.eql(data);
-                    done();
-                });
+
+                api.execute({ resource: 'user' })
+                    .then(function (response) {
+                        expect(response.data).to.eql(data);
+                        done();
+                    })
+                    .catch(done);
+
                 server.respond();
             });
 
-            it('should return error as first parameter', function (done) {
+            it('should reject promise with error', function (done) {
                 var serverResponse = JSON.stringify({
                     meta: {},
                     data: null,
@@ -253,20 +258,26 @@ define(['flora-client'], function (FloraClient) {
                 });
 
                 server.respondWith([500, {'Content-Type': 'application/json'}, serverResponse]);
-                api.execute({resource: 'user'}, function (err) {
-                    expect(err).to.be.instanceof(Error);
-                    expect(err.message).to.equal('foobar');
-                    done();
-                });
+
+                api.execute({ resource: 'user' })
+                    .then(function () {
+                        done(new Error('Expected promise to reject'));
+                    })
+                    .catch(function (err) {
+                        expect(err).to.be.instanceof(Error);
+                        expect(err.message).to.equal('foobar');
+                        done();
+                    });
+
                 server.respond();
             });
         });
 
         describe('timeouts', function () {
-            var xhr, clock, spy, error;
+            var timeoutError = new Error('Expected promise to reject with timeout error');
+            var xhr, clock;
 
             beforeEach(function () {
-                spy = sinon.spy();
                 clock = sinon.useFakeTimers();
                 xhr = sinon.useFakeXMLHttpRequest();
             });
@@ -277,31 +288,43 @@ define(['flora-client'], function (FloraClient) {
             });
 
             it('should use default timeout', function () {
-                api.execute({ resource: 'user' }, spy);
-                clock.tick(18000);
+                api.execute({ resource: 'user' })
+                    .then(function () {
+                        throw timeoutError;
+                    })
+                    .catch(function (err) {
+                        expect(err).to.be.instanceOf(Error)
+                            .and.to.have.property('message', 'Request timed out after ' + api.timeout + ' milliseconds');
+                    });
 
-                error = spy.args[0][0];
-                expect(error).to.be.instanceOf(Error)
-                    .and.to.have.property('message', 'Request timed out after ' + api.timeout + ' milliseconds');
+                clock.tick(18000);
             });
 
             it('should use custom timeout', function () {
-                (new FloraClient({ url: url, timeout: 3000 })).execute({ resource: 'user' }, spy);
-                clock.tick(5000);
+                (new FloraClient({ url: url, timeout: 3000 })).execute({ resource: 'user' })
+                    .then(function () {
+                        throw timeoutError;
+                    })
+                    .catch(function (err) {
+                        expect(err).to.be.instanceOf(Error)
+                            .and.to.have.property('message', 'Request timed out after 3000 milliseconds');
+                    });
 
-                error = spy.args[0][0];
-                expect(error).to.be.instanceOf(Error)
-                    .and.to.have.property('message', 'Request timed out after 3000 milliseconds');
+                clock.tick(5000);
             });
         });
 
         describe('formats', function () {
             it('should trigger an error on non-JSON formats', function (done) {
-                api.execute({ resource: 'user', format: 'pdf' }, function (err) {
-                    expect(err).to.be.instanceof(Error);
-                    expect(err.message).to.equal('Only JSON format supported');
-                    done();
-                });
+                api.execute({ resource: 'user', format: 'pdf' })
+                    .then(function () {
+                        throw new Error('Expected promise to reject');
+                    })
+                    .catch(function (err) {
+                        expect(err).to.be.instanceof(Error);
+                        expect(err.message).to.equal('Only JSON format supported');
+                        done();
+                    });
             });
         });
     });
