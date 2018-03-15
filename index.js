@@ -23,7 +23,7 @@
      * @param {?Object} options.defaultParams                           - Parameters added to each request automatically
      * @param {?Array}  [options.forceGetParams=['client_id', 'action']]- Parameters are always send in query string
      * @param {?number} [options.timeout=15000]                         - Timeout in milliseconds
-     * @param {?function} options.authenticate                          - Authentication handler (Promise)
+     * @param {?Function} options.authenticate                          - Authentication handler (Promise)
      * @constructor
      */
     function FloraClient(options) {
@@ -61,30 +61,37 @@
     /**
      * Execute request against configured Flora instance.
      *
-     * @param {Object}              request              - Request configuration object
-     * @param {string}              request.resource     - Resource name
-     * @param {(number|string)=}    request.id           - Unique identifier of an item
-     * @param {string=}             request.format       - Response format (default: JSON - no other formats supported)
-     * @param {string=}             request.action       - API action (default: retrieve)
-     * @param {string=}             request.select       - Retrieve given resource attributes
-     * @param {string=}             request.filter       - Filter items by given criteria
-     * @param {string=}             request.order        - Order items by given criteria
-     * @param {number=}             request.limit        - Limit result set
-     * @param {number=}             request.page         - Paginate through result
-     * @param {string=}             request.search       - Search items by full text search
-     * @param {Object=}             request.data         - Send data as JSON
-     * @param {boolean=}            request.cache        - Use HTTP caching (default: true)
-     * @param {string=}             request.httpMethod   - Explicitly overwrite HTTP method
-     * @param {boolean=}            request.authenticate - Use the authentication handler on this request (default: false)
+     * @param {Object}              request                     - Request configuration object
+     * @param {string}              request.resource            - Resource name
+     * @param {(number|string)=}    request.id                  - Unique identifier of an item
+     * @param {string=}             [request.format=json]       - Response format
+     * @param {string=}             [request.action=retrieve]   - API action
+     * @param {string=}             request.select              - Retrieve given resource attributes
+     * @param {string=}             request.filter              - Filter items by given criteria
+     * @param {string=}             request.order               - Order items by given criteria
+     * @param {number=}             request.limit               - Limit result set
+     * @param {number=}             request.page                - Paginate through result
+     * @param {string=}             request.search              - Search items by full text search
+     * @param {Object=}             request.data                - Send data as JSON
+     * @param {boolean=}            [request.cache=true]        - Use HTTP caching
+     * @param {string=}             request.httpMethod          - Explicitly overwrite HTTP method
+     * @param {Object=}             request.httpHeaders         - Additional HTTP headers
+     * @param {boolean=}            [request.authenticate=false]- Use the authentication handler on this request
      * @return {Promise}
      */
     FloraClient.prototype.execute = function (request) {
+        var scope = this;
+
         if (request.authenticate) {
             if (!this.authenticate) {
-                return Promise.reject(new Error('Authenticated requests require an authentication handler in the constructor'));
+                return Promise.reject(new Error('Authenticated requests require an authentication handler'));
             }
 
-            return this.authenticate(request).then(() => this._execute(request));
+            request.httpHeaders = request.httpHeaders || {};
+            return this.authenticate(request)
+                .then(function () {
+                    return scope._execute(request);
+                });
         }
 
         return this._execute(request);
@@ -120,7 +127,9 @@
         }
 
         for (key in request) {
-            if (has(request, key)) opts.params[key] = request[key];
+            if (!has(request, key)) continue;
+            if (['authenticate', 'httpHeaders'].indexOf(key) !== -1) continue;
+            opts.params[key] = request[key];
         }
 
         if (this.defaultParams) {
@@ -171,6 +180,13 @@
         xhr.open(cfg.httpMethod, cfg.url);
 
         xhr.timeout = scope.timeout;
+
+        if (!isEmpty(cfg.headers)) {
+            for (var header in cfg.headers) {
+                if (!has(cfg.headers, header)) continue;
+                xhr.setRequestHeader(header, cfg.headers[header]);
+            }
+        }
 
         if (cfg.httpMethod !== 'POST') xhr.send();
         else {

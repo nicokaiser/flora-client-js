@@ -106,6 +106,12 @@ define(['flora-client'], function (FloraClient) {
                 expect(request.requestBody).to.equal('{"title":"Lorem Ipsum","author":{"id":1337}}');
             });
 
+            it('should not add httpHeaders option to request params', function () {
+                api.execute({ resource: 'user', httpHeaders: { 'X-Awesome': 'test' } });
+                expect(requests[0]).to.have.property('url')
+                    .and.not.to.contain('httpHeaders=');
+            });
+
             describe('parameters', function () {
                 it('should ordered by name (better caching)', function () {
                     var queryString = [
@@ -210,6 +216,66 @@ define(['flora-client'], function (FloraClient) {
             });
         });
 
+        describe('authentication', function () {
+            var server;
+
+            beforeEach(function () {
+                server = sinon.createFakeServer();
+                server.autoRespond = true;
+                server.respondWith([
+                    200,
+                    { "Content-Type": "application/json" },
+                    '{"meta":{},"data":{},"cursor":{}}'
+                ]);
+            });
+
+            afterEach(function () {
+                server.restore();
+            });
+
+            it('should call handler function if authentication option is enabled', function (done) {
+                var authStub = function (floraReq) {
+                    floraReq.httpHeaders.Authorization = 'Bearer __token__';
+                    return Promise.resolve();
+                };
+
+                (new FloraClient({ url: url, authenticate: authStub }))
+                    .execute({ resource: 'user', authenticate: true })
+                    .then(function () {
+                        expect(server.requests).to.have.length(1);
+                        expect(server.requests[0]).to.have.property('requestHeaders')
+                            .and.to.have.property('Authorization', 'Bearer __token__');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should reject request if no authentication handler is set', function (done) {
+                (new FloraClient({ url: url }))
+                    .execute({ resource: 'user', authenticate: true })
+                    .then(function () {
+                        done(new Error('Expected promise to reject'));
+                    })
+                    .catch(function (err) {
+                        expect(err).to.be.instanceOf(Error)
+                            .and.to.have.property('message')
+                            .and.to.contain('Authenticated requests require an authentication handler');
+                        done();
+                    });
+            });
+
+            it('should not add authenticate option as request parameter', function (done) {
+                (new FloraClient({ url: url, authenticate: sinon.stub().resolves() }))
+                    .execute({ resource: 'user', authenticate: true })
+                    .then(function () {
+                        expect(server.requests[0]).to.have.property('url')
+                            .and.to.not.contain('authenticate=');
+                        done();
+                    })
+                    .catch(done);
+            });
+        });
+
         describe('return value', function () {
             var server;
 
@@ -287,7 +353,7 @@ define(['flora-client'], function (FloraClient) {
             it('should use default timeout', function () {
                 api.execute({ resource: 'user' })
                     .then(function () {
-                        throw timeoutError;
+                        done(timeoutError);
                     })
                     .catch(function (err) {
                         expect(err).to.be.instanceOf(Error)
@@ -300,7 +366,7 @@ define(['flora-client'], function (FloraClient) {
             it('should use custom timeout', function () {
                 (new FloraClient({ url: url, timeout: 3000 })).execute({ resource: 'user' })
                     .then(function () {
-                        throw timeoutError;
+                        done(timeoutError);
                     })
                     .catch(function (err) {
                         expect(err).to.be.instanceOf(Error)
@@ -315,7 +381,7 @@ define(['flora-client'], function (FloraClient) {
             it('should trigger an error on non-JSON formats', function (done) {
                 api.execute({ resource: 'user', format: 'pdf' })
                     .then(function () {
-                        throw new Error('Expected promise to reject');
+                        done(new Error('Expected promise to reject'));
                     })
                     .catch(function (err) {
                         expect(err).to.be.instanceof(Error);

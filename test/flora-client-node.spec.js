@@ -348,6 +348,21 @@ describe('Flora node client', function () {
                 })
                 .catch(done);
         });
+
+        it('should not add httpHeaders option to request params', function (done) {
+            req = nock(url)
+                .get('/user/')
+                .query(function (queryObj) {
+                    return !queryObj.hasOwnProperty('httpHeaders');
+                })
+                .reply(200, { meta: {}, data: [] });
+
+            api.execute({ resource: 'user', httpHeaders: { 'X-Awesome': 'test' }})
+                .then(function () {
+                    done();
+                })
+                .catch(done);
+        });
     });
 
     describe('response', function () {
@@ -401,6 +416,60 @@ describe('Flora node client', function () {
                     expect(err).to.be.instanceOf(Error);
                     done();
                 });
+        });
+    });
+
+    describe('authentication', function () {
+        it('should call handler function if authentication option is enabled', function (done) {
+            var authStub = function (floraReq) {
+                floraReq.httpHeaders.Authorization = 'Bearer __token__';
+                return Promise.resolve();
+            };
+
+            req = nock(url, { reqheaders: { Authorization: 'Bearer __token__' } })
+                .get('/user/')
+                .reply(200, { meta: {}, data: [] });
+
+            (new FloraClient({ url: url, authenticate: authStub }))
+                .execute({ resource: 'user', authenticate: true })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('should reject request if no authentication handler is set', function (done) {
+            (new FloraClient({ url: url }))
+                .execute({ resource: 'user', authenticate: true })
+                .then(function () {
+                    done(new Error('Expected promise to reject'));
+                })
+                .catch(function (err) {
+                    expect(err).to.be.instanceOf(Error)
+                        .and.to.have.property('message')
+                        .and.to.contain('Authenticated requests require an authentication handler');
+                    done();
+                });
+        });
+
+        it('should not add authenticate option as request parameter', function (done) {
+            var authStub = function () {
+                return Promise.resolve();
+            };
+
+            req = nock(url)
+                .get('/user/')
+                .query(function (queryObj) {
+                    return !queryObj.hasOwnProperty('authenticate');
+                })
+                .reply(200, { meta: {}, data: [] });
+
+            (new FloraClient({ url: url, authenticate: authStub }))
+                .execute({ resource: 'user', authenticate: true })
+                .then(function () {
+                    done();
+                })
+                .catch(done);
         });
     });
 
