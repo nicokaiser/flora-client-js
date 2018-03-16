@@ -48,6 +48,9 @@ describe('Flora node client', function () {
         it('should treat action=retrieve as standard (and not transmit it)', function (done) {
             req = nock(url)
                 .get('/user/')
+                .query(function (queryObj) {
+                    return !queryObj.hasOwnProperty('action');
+                })
                 .reply(200, response);
 
             api.execute({ resource: 'user', action: 'retrieve' })
@@ -59,7 +62,8 @@ describe('Flora node client', function () {
 
         it('should add action parameter', function (done) {
             req = nock(url)
-                .post('/user/1337', /action=update/)
+                .post('/user/1337')
+                .query({ action: 'update' })
                 .reply(200, response);
 
             api.execute({ resource: 'user', id: 1337, action: 'update'})
@@ -204,7 +208,8 @@ describe('Flora node client', function () {
 
             it('should use POST for other actions than "retrieve"', function (done) {
                 req = nock(url)
-                    .post('/user/1337', /action=lock/)
+                    .post('/user/1337')
+                    .query({ action: 'lock' })
                     .reply(200, response);
 
                 api.execute({ resource: 'user', id: 1337, action: 'lock' })

@@ -46,7 +46,8 @@ define(['flora-client'], function (FloraClient) {
 
             it('should add action parameter', function () {
                 api.execute({ resource: 'user', id: 1337, action: 'awesome' });
-                expect(requests[0].requestBody).to.contain('action=awesome');
+                expect(requests[0]).to.have.property('url')
+                    .and.to.contain('action=awesome');
             });
 
             it('should add select parameter to querystring', function () {
@@ -152,23 +153,18 @@ define(['flora-client'], function (FloraClient) {
                 });
 
                 it('should send selected parameters as part of the querystring', function () {
-                    var api = new FloraClient({
-                        url: url,
-                        defaultParams: {client_id: 1},
-                        forceGetParams: ['client_id']
-                    });
-
-                    api.execute({
+                    (new FloraClient({ url: url, forceGetParams: ['foobar'] })).execute({
                         resource: 'article',
                         action: 'create',
                         data: {
                             title: 'Lorem Ipsum',
                             author: { id: 1337 }
-                        }
+                        },
+                        foobar: 1
                     });
 
                     var request = requests[0];
-                    expect(request.url).to.contain('client_id=1');
+                    expect(request.url).to.contain('foobar=1');
                     expect(request.requestBody).to.equal('{"title":"Lorem Ipsum","author":{"id":1337}}');
                 });
             });
@@ -186,7 +182,8 @@ define(['flora-client'], function (FloraClient) {
 
                 it('should use POST for other actions than "retrieve"', function () {
                     api.execute({ resource: 'user', id: 1337, action: 'lock' });
-                    expect(requests[0].method).to.equal('POST');
+                    expect(requests[0]).to.have.property('method', 'POST');
+                    expect(requests[0].requestBody).to.be.undefined;
                 });
 
                 it('should explicitly overwrite method by parameter', function () {
