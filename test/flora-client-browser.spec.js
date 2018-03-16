@@ -250,7 +250,24 @@ define(['flora-client'], function (FloraClient) {
                     .catch(done);
             });
 
-            it('should reject request if no authentication handler is set', function (done) {
+            it('should add access_token parameter', function (done) {
+                var authStub = function (floraReq) {
+                    floraReq.access_token = '__token__';
+                    return Promise.resolve();
+                };
+
+                (new FloraClient({ url: url, authenticate: authStub, forceGetParams: ['access_token'] }))
+                    .execute({ resource: 'user', authenticate: true })
+                    .then(function () {
+                        expect(server.requests).to.have.length(1);
+                        expect(server.requests[0]).to.have.property('url')
+                            .and.to.contain('access_token=__token__');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('should reject request if authentication handler is not set', function (done) {
                 (new FloraClient({ url: url }))
                     .execute({ resource: 'user', authenticate: true })
                     .then(function () {
