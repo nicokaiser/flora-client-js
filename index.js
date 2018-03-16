@@ -18,12 +18,13 @@
      * {@link https://nodejs.org/api/http.html|http}/{@link https://nodejs.org/api/https.html|https} module in Node.js
      * to run requests against Flora instance.
      *
-     * @param {Object}  options                                         - Client config options
-     * @param {string}  options.url                                     - URL of Flora instance
-     * @param {?Object} options.defaultParams                           - Parameters added to each request automatically
-     * @param {?Array}  [options.forceGetParams=['client_id', 'action']]- Parameters are always send in query string
-     * @param {?number} [options.timeout=15000]                         - Timeout in milliseconds
-     * @param {?Function} options.authenticate                          - Authentication handler (Promise)
+     * @param {Object}      options                     - Client config options
+     * @param {string}      options.url                 - URL of Flora instance
+     * @param {?Object}     options.defaultParams       - Parameters added to each request automatically
+     * @param {?Array}      [options.forceGetParams=['client_id', 'action', 'access_token']]
+     *                                                  - Parameters are always send in query string
+     * @param {?number}     [options.timeout=15000]     - Timeout in milliseconds
+     * @param {?Function}   options.authenticate        - Authentication handler (Promise)
      * @constructor
      */
     function FloraClient(options) {
@@ -48,7 +49,7 @@
             }
         }
 
-        this.forceGetParams = ['client_id', 'action'];
+        this.forceGetParams = ['client_id', 'action', 'access_token'];
         if (options.forceGetParams && Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
             Array.prototype.push.apply(this.forceGetParams, options.forceGetParams);
         }

@@ -445,12 +445,15 @@ describe('Flora node client', function () {
             };
 
             req = nock(url)
-                .get('/user/')
-                .query({ access_token: '__token__' })
+                .post('/user/1337')
+                .query({
+                    access_token: '__token__',
+                    action: 'update'
+                })
                 .reply(200, { meta: {}, data: [] });
 
-            (new FloraClient({ url: url, authenticate: authStub, forceGetParams: ['access_token'] }))
-                .execute({ resource: 'user', authenticate: true })
+            (new FloraClient({ url: url, authenticate: authStub }))
+                .execute({ resource: 'user', id: 1337, action: 'update', authenticate: true })
                 .then(function () {
                     done();
                 })

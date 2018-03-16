@@ -256,8 +256,8 @@ define(['flora-client'], function (FloraClient) {
                     return Promise.resolve();
                 };
 
-                (new FloraClient({ url: url, authenticate: authStub, forceGetParams: ['access_token'] }))
-                    .execute({ resource: 'user', authenticate: true })
+                (new FloraClient({ url: url, authenticate: authStub }))
+                    .execute({ resource: 'user', id: 1337, action: 'update', authenticate: true })
                     .then(function () {
                         expect(server.requests).to.have.length(1);
                         expect(server.requests[0]).to.have.property('url')
