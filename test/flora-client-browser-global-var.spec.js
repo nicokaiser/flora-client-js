@@ -1,8 +1,7 @@
-/*global describe, it, expect, FloraClient */
-describe('Flora client', function () {
+describe('Flora client', () => {
     'use strict';
 
-    it('should define a global variable', function () {
+    it('should define a global variable', () => {
         expect(FloraClient).to.be.a('function');
     });
 });
