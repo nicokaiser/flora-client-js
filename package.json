@@ -7,6 +7,21 @@
     "doc": "grunt doc",
     "lint": "grunt lint"
   },
+  "repository": "godmodelabs/flora-client-js",
+  "contributors": [
+    {
+      "name": "Mark Plomer",
+      "email": "mark.plomer@boerse-go.de"
+    },
+    {
+      "name": "Nico Kaiser",
+      "email": "nico@kaiser.me"
+    },
+    {
+      "name": "Marco Baumgartl",
+      "email": "marco.baumgartl@boerse-go.de"
+    }
+  ],
   "directories": {
     "test": "test"
   },
