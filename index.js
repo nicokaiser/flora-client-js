@@ -11,6 +11,17 @@
         return Object.prototype.hasOwnProperty.call(obj, prop);
     }
 
+    function isValidRequestId(id) {
+        var type = typeof id;
+
+        if (type === 'number') {
+            if (isNaN(id)) return false;
+            if (!isFinite(id)) return false;
+        }
+
+        return type === 'string' || type === 'number';
+    }
+
     /**
      * Simple client to access Flora APIs.
      *
@@ -82,6 +93,10 @@
      */
     FloraClient.prototype.execute = function (request) {
         var scope = this;
+
+        if (has(request, 'id') && !isValidRequestId(request.id)) {
+            return Promise.reject(new Error('Request id must be of type number or string'));
+        }
 
         if (request.authenticate) {
             if (!this.authenticate) {

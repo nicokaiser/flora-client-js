@@ -19,4 +19,29 @@ describe('Flora client API', () => {
         const api = new FloraClient({ url: 'http://example.com' });
         expect(api.url).to.equal('http://example.com/');
     });
+
+    describe('request id check', () => {
+        const api = new FloraClient({ url: 'http://example.com/' });
+        const invalidIds = {
+            /*'undefined': undefined,
+            'null': null,*/
+            'boolean': true,
+            'NaN': NaN,
+            'Infinity': Infinity
+        };
+
+        Object.keys(invalidIds).forEach(type => {
+            it(`should reject ${type} as request id`, done => {
+                const invalidId = invalidIds[type];
+
+                api.execute({ resource: 'user', id: invalidId })
+                    .then(() => done(new Error('Expected promise to reject')))
+                    .catch((err) => {
+                        expect(err).to.be.instanceof(Error)
+                            .and.to.have.property('message', 'Request id must be of type number or string');
+                        done();
+                    });
+            });
+        });
+    });
 });
