@@ -22,9 +22,6 @@
       "email": "marco.baumgartl@boerse-go.de"
     }
   ],
-  "directories": {
-    "test": "test"
-  },
   "author": "BörseGo AG",
   "license": "MIT",
   "devDependencies": {
