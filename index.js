@@ -229,7 +229,7 @@
                     return reject(e);
                 }
 
-                if (xhr.status === 200) resolve(response);
+                if (xhr.status < 400) resolve(response);
                 else {
                     const err = new Error(getErrorMessage(response));
                     err.response = response;
