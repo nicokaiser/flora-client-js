@@ -339,6 +339,46 @@ describe('Flora node client', () => {
                 });
         });
 
+        it('should add response to error object', done => {
+            const floraReq = {
+                resource: 'user',
+                action: 'lock',
+                id: 1337
+            };
+
+            req = nock(url)
+                .post('/user/1337')
+                .query({ action: 'lock' })
+                .reply(400, {
+                    meta: {},
+                    data: null,
+                    error: {
+                        message: 'Account already locked',
+                        additional: {
+                            info: true
+                        }
+                    }
+                });
+
+            api.execute(floraReq)
+                .then(() => done(new Error('Expected promise to reject')))
+                .catch(err => {
+                    expect(err)
+                        .to.have.property('response')
+                        .and.to.eql({
+                            meta: {},
+                            data: null,
+                            error: {
+                                message: 'Account already locked',
+                                additional: {
+                                    info: true
+                                }
+                            }
+                        });
+                    done();
+                });
+        });
+
         it('should trigger an error if JSON cannot be parsed', done => {
             req = nock(url)
                 .get('/user/')

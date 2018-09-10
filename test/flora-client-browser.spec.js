@@ -327,6 +327,46 @@ define(['flora-client'], (FloraClient) => {
 
                 server.respond();
             });
+
+            it('should add response to error object', done => {
+                const floraReq = {
+                    resource: 'user',
+                    action: 'lock',
+                    id: 1337
+                };
+                const serverResponse = JSON.stringify({
+                    meta: {},
+                    data: null,
+                    error: {
+                        message: 'Account already locked',
+                        additional: {
+                            info: true
+                        }
+                    }
+                });
+
+                server.respondWith([400, {'Content-Type': 'application/json'}, serverResponse]);
+
+                api.execute(floraReq)
+                    .then(() => done(new Error('Expected promise to reject')))
+                    .catch(err => {
+                        expect(err)
+                            .to.have.property('response')
+                            .and.to.eql({
+                            meta: {},
+                            data: null,
+                            error: {
+                                message: 'Account already locked',
+                                additional: {
+                                    info: true
+                                }
+                            }
+                        });
+                        done();
+                    });
+
+                server.respond();
+            });
         });
 
         describe('timeouts', () => {

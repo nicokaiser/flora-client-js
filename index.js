@@ -22,6 +22,11 @@
         return type === 'string' || type === 'number';
     }
 
+    function getErrorMessage(response) {
+        if (response.error && response.error.message) return response.error.message;
+        return 'error';
+    }
+
     /**
      * Simple client to access Flora APIs.
      *
@@ -225,7 +230,11 @@
                 }
 
                 if (xhr.status === 200) resolve(response);
-                else reject(new Error(response.error && response.error.message ? response.error.message : 'error'));
+                else {
+                    const err = new Error(getErrorMessage(response));
+                    err.response = response;
+                    reject(err);
+                }
             });
         });
     };
@@ -267,7 +276,11 @@
                     }
 
                     if (res.statusCode < 400) resolve(response);
-                    else reject(new Error(response.error && response.error.message || 'error'));
+                    else {
+                        const err = new Error(getErrorMessage(response));
+                        err.response = response;
+                        reject(err);
+                    }
                 });
             });
 
