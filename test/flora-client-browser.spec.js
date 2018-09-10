@@ -131,14 +131,14 @@ define(['flora-client'], (FloraClient) => {
 
                 it('should support defaults', () => {
                     (new FloraClient({ url, defaultParams: { param: 'abc' } }))
-                        .execute({resource: 'user', id: 1337});
+                        .execute({ resource: 'user', id: 1337 });
 
                     expect(requests[0].url).to.contain('/user/1337?param=abc');
                 });
 
                 it('should use request parameter if default exists with same name', () => {
                     (new FloraClient({ url, defaultParams: { param: 'abc' } }))
-                        .execute({resource: 'user', id: 1337, param: 'xyz'});
+                        .execute({ resource: 'user', id: 1337, param: 'xyz' });
 
                     expect(requests[0].url).to.contain('/user/1337?param=xyz');
                 });

@@ -145,7 +145,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .matchHeader('Content-Type', /application\/json/)
                 .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
-                .query({action: 'create'})
+                .query({ action: 'create' })
                 .reply(200, response);
 
             api.execute(floraReq)
@@ -251,7 +251,7 @@ describe('Flora node client', () => {
                 .reply(200, {});
 
             (new FloraClient({ url, defaultParams: { param: 'abc' } }))
-                .execute({resource: 'user', id: 1337})
+                .execute({ resource: 'user', id: 1337 })
                 .then(() => done())
                 .catch(done);
         });
@@ -262,7 +262,7 @@ describe('Flora node client', () => {
                 .reply(200, {});
 
             (new FloraClient({ url, defaultParams: { param: 'abc' } }))
-                .execute({resource: 'user', id: 1337, param: 'xyz'})
+                .execute({ resource: 'user', id: 1337, param: 'xyz' })
                 .then(() => done())
                 .catch(done);
         });
