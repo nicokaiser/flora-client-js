@@ -241,9 +241,10 @@
 
     // Execute HTTP request in Node.js
     FloraClient.prototype._nodeRequest = function (cfg) {
-        var protocol = require('http' + (this.url.indexOf('http:') !== -1 ? '' : 's')),
+        var HTTPAdapter = require('HTTPAdapter');
+        /*var protocol = require('http' + (this.url.indexOf('http:') !== -1 ? '' : 's')),
             url = require('url'),
-            path = require('path');
+            path = require('path');*/
 
         var scope = this,
             opts = url.parse(cfg.url),
