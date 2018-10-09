@@ -1,45 +1,25 @@
-const { resolve } = require('path');
-const merge = require('webpack-merge');
+const path = require('path');
 
-/**
- *
- * @type {{entry: *, resolve: {alias: {public: *}}}}
- */
+const BUILD_DIR = path.join(__dirname, 'build');
+const DIST_DIR = path.join(__dirname, 'dist');
 
-const baseConfig = {
-    entry: resolve(__dirname, 'src/index.js')
-};
-
-/**
- *
- */
-
-const browserConfig = merge(baseConfig, {
+module.exports = [{
+    target: 'web',
+    entry: path.join(BUILD_DIR, 'browser.js'),
+    devtool: 'source-map',
     output: {
-        path: resolve(__dirname, './dist'),
-        filename: 'index.browser.js'
-    },
-    resolve: {
-        alias: {
-            'HTTPAdapter': resolve(__dirname, './src/HTTPAdapter.browser')
-        }
+        filename: 'index.browser.js',
+        path: DIST_DIR,
+        library: 'FloraClient',
+        libraryTarget: 'umd',
+        umdNamedDefine: false
     }
-});
-
-/**
- *
- */
-
-const nodeConfig = merge(baseConfig, {
+}, {
+    target: 'node',
+    entry: path.join(BUILD_DIR, 'node.js'),
+    devtool: 'source-map',
     output: {
-        path: resolve(__dirname, './dist'),
-        filename: 'index.node.js'
-    },
-    resolve: {
-        alias: {
-            'HTTPAdapter': resolve(__dirname, './src/HTTPAdapter.node')
-        }
+        filename: 'index.node.js',
+        path: DIST_DIR
     }
-});
-
-module.exports = [browserConfig, nodeConfig];
+}];

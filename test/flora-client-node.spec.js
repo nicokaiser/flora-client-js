@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 const nock = require('nock');
-const FloraClient = require('../');
+const FloraClient = require('../build/node');
 
 describe('Flora node client', () => {
     const url = 'http://api.example.com/';
@@ -15,6 +15,17 @@ describe('Flora node client', () => {
     });
 
     after(() => nock.restore());
+
+    describe('interface', () => {
+        it('should require url on initialization', () => {
+            expect(() => new FloraClient({})).to.throw(Error, 'Flora API url must be set');
+        });
+
+        it('should define execute function', () => {
+            const api = new FloraClient({ url: 'http://example.com/' });
+            expect(api.execute).to.be.a('function');
+        });
+    });
 
     describe('request', () => {
         const response = { meta: {}, data: {} };
@@ -217,34 +228,6 @@ describe('Flora node client', () => {
     });
 
     describe('parameters', () => {
-        it('should be ordered by name (better caching)', done => {
-            const queryString = [
-                'filter=address.country.iso2%3DAT',
-                'limit=10',
-                'order=lastname%3Adesc',
-                'page=3',
-                'search=John',
-                'select=id%2Cfirstname%2Clastname'
-            ].join('&');
-            const floraReq = {
-                resource: 'user',
-                search: 'John',
-                page: 3,
-                limit: 10,
-                order: 'lastname:desc',
-                select: 'id,firstname,lastname',
-                filter: 'address.country.iso2=AT'
-            };
-
-            req = nock(url)
-                .get(`/user/?${queryString}`)
-                .reply(200, {});
-
-            api.execute(floraReq)
-                .then(() => done())
-                .catch(done);
-        });
-
         it('should support default parameters', done => {
             req = nock(url)
                 .get('/user/1337?param=abc')
@@ -300,6 +283,31 @@ describe('Flora node client', () => {
             api.execute({ resource: 'user', httpHeaders: { 'X-Awesome': 'test' }})
                 .then(() => done())
                 .catch(done);
+        });
+
+        describe('request id', () => {
+            const api = new FloraClient({ url: 'http://example.com/' });
+            const invalidIds = {
+                /*'undefined': undefined,
+                'null': null,*/
+                'boolean': true,
+                'NaN': NaN,
+                'Infinity': Infinity
+            };
+
+            Object.keys(invalidIds).forEach(type => {
+                it(`should reject ${type} as request id`, done => {
+                    const invalidId = invalidIds[type];
+
+                    api.execute({ resource: 'user', id: invalidId })
+                        .then(() => done(new Error('Expected promise to reject')))
+                        .catch((err) => {
+                            expect(err).to.be.instanceof(Error)
+                                .and.to.have.property('message', 'Request id must be of type number or string');
+                            done();
+                        });
+                });
+            });
         });
     });
 

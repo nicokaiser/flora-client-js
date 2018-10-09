@@ -10,6 +10,17 @@ define(['flora-client'], (FloraClient) => {
             api = new FloraClient({ url });
         });
 
+        describe('interface', () => {
+            it('should require url on initialization', () => {
+                expect(() => new FloraClient({})).to.throw(Error, 'Flora API url must be set');
+            });
+
+            it('should define execute function', () => {
+                const api = new FloraClient({ url: 'http://example.com/' });
+                expect(api.execute).to.be.a('function');
+            });
+        });
+
         describe('request', () => {
             let requests;
             let xhr;
@@ -53,11 +64,6 @@ define(['flora-client'], (FloraClient) => {
             it('should add filter parameter to querystring', () => {
                 api.execute({ resource: 'user', filter: 'address[country.iso2=DE AND city=Munich]' });
                 expect(requests[0].url).to.contain('filter=address%5Bcountry.iso2%3DDE%20AND%20city%3DMunich%5D');
-            });
-
-            it('should add order parameter to querystring', () => {
-                api.execute({ resource: 'user', order: 'lastname:asc,firstname:desc' });
-                expect(requests[0].url).to.contain('order=lastname%3Aasc%2Cfirstname%3Adesc');
             });
 
             it('should add limit parameter to querystring', () => {
@@ -106,29 +112,6 @@ define(['flora-client'], (FloraClient) => {
             });
 
             describe('parameters', () => {
-                it('should ordered by name (better caching)', () => {
-                    const queryString = [
-                        'filter=address.country.iso2%3DAT',
-                        'limit=10',
-                        'order=lastname%3Adesc',
-                        'page=3',
-                        'search=John',
-                        'select=id%2Cfirstname%2Clastname'
-                    ].join('&');
-
-                    api.execute({
-                        resource: 'user',
-                        search: 'John',
-                        page: 3,
-                        limit: 10,
-                        order: 'lastname:desc',
-                        select: 'id,firstname,lastname',
-                        filter: 'address.country.iso2=AT'
-                    });
-
-                    expect(requests[0].url).to.contain(`/user/?${queryString}`);
-                });
-
                 it('should support defaults', () => {
                     (new FloraClient({ url, defaultParams: { param: 'abc' } }))
                         .execute({ resource: 'user', id: 1337 });
@@ -194,6 +177,31 @@ define(['flora-client'], (FloraClient) => {
                     });
 
                     expect(requests[0].method).to.equal('POST');
+                });
+            });
+
+            describe('request id check', () => {
+                const api = new FloraClient({ url: 'http://example.com/' });
+                const invalidIds = {
+                    /*'undefined': undefined,
+                    'null': null,*/
+                    'boolean': true,
+                    'NaN': NaN,
+                    'Infinity': Infinity
+                };
+
+                Object.keys(invalidIds).forEach(type => {
+                    it(`should reject ${type} as request id`, done => {
+                        const invalidId = invalidIds[type];
+
+                        api.execute({ resource: 'user', id: invalidId })
+                            .then(() => done(new Error('Expected promise to reject')))
+                            .catch((err) => {
+                                expect(err).to.be.instanceof(Error)
+                                    .and.to.have.property('message', 'Request id must be of type number or string');
+                                done();
+                            });
+                    });
                 });
             });
         });
@@ -389,7 +397,7 @@ define(['flora-client'], (FloraClient) => {
                     .then(() => done(timeoutError))
                     .catch(err => {
                         expect(err).to.be.instanceOf(Error)
-                            .and.to.have.property('message', `Request timed out after ${api.timeout} milliseconds`);
+                            .and.to.have.property('message', `Request timed out after 15000 milliseconds`);
                         done();
                     });
 
