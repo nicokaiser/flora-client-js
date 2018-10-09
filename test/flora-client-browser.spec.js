@@ -1,10 +1,11 @@
 'use strict';
 
+const { expect } = require('chai');
+
 const FloraClient = require('../build/browser');
 
-const url = 'http://api.example.com';
-
 describe('Flora client', () => {
+    const url = 'http://api.example.com';
     let api;
 
     beforeEach(() => {
