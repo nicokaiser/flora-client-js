@@ -2,15 +2,6 @@
 
 module.exports = function (grunt) {
     grunt.initConfig({
-        mkdir: {
-            build: { // mocha bamboo reporter does not create directory automatically
-                options: {
-                    mode: '0755',
-                    create: ['build']
-                }
-            }
-        },
-
         mochaTest: {
             node: {
                 options: {
@@ -75,7 +66,7 @@ module.exports = function (grunt) {
 
     // node.js tests
     grunt.registerTask('test-node', 'mochaTest:node');
-    grunt.registerTask('test-node-bamboo', ['mkdir:build', 'mochaTest:nodeBamboo']);
+    grunt.registerTask('test-node-bamboo', 'mochaTest:nodeBamboo');
     grunt.registerTask('node-cov', 'mocha_istanbul:coverageBamboo');
 
     // browser tests
