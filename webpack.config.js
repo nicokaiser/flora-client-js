@@ -10,9 +10,7 @@ module.exports = [{
     output: {
         filename: 'index.browser.js',
         path: DIST_DIR,
-        library: 'FloraClient',
-        libraryTarget: 'umd',
-        umdNamedDefine: false
+        libraryTarget: 'umd'
     }
 }, {
     target: 'node',
