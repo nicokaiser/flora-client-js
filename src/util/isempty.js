@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = (obj) => JSON.stringify(obj) === '{}';
+module.exports = obj => JSON.stringify(obj) === '{}';

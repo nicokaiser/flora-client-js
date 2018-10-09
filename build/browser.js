@@ -2,11 +2,11 @@
 
 const Client = require('../src/Client');
 const Adapter = require('../src/Adapter/Xhr');
+const timeout = require('./timeout');
 
 class FloraClient extends Client {
     constructor(opts) {
-        const timeout = opts.timeout && !isNaN(Number(opts.timeout)) ? parseInt(opts.timeout, 10) : 15000;
-        opts.adapter = opts.adapter || new Adapter({ timeout });
+        opts.adapter = opts.adapter || new Adapter({ timeout: timeout(opts) });
         super(opts);
     }
 }

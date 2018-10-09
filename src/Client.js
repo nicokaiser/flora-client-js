@@ -15,13 +15,13 @@ class Client {
      * {@link https://nodejs.org/api/http.html|http}/{@link https://nodejs.org/api/https.html|https} module in Node.js
      * to run requests against Flora instance.
      *
-     * @param {Object}      options                     - Client config options
-     * @param {string}      options.url                 - URL of Flora instance
-     * @param {Object}      options.adapter             - Instance of HTTP adapter
-     * @param {?Object}     options.defaultParams       - Parameters added to each request automatically
-     * @param {?Array}      [options.forceGetParams=['client_id', 'action', 'access_token']]
-     *                                                  - Parameters are always send in query string
-     * @param {?Function}   options.authenticate        - Authentication handler (Promise)
+     * @param {Object}  options                     - Client config options
+     * @param {string}  options.url                 - URL of Flora instance
+     * @param {Object}  options.adapter             - Instance of HTTP adapter
+     * @param {?Object} options.defaultParams       - Parameters added to each request automatically
+     * @param {?Array}  [options.forceGetParams=['client_id', 'action', 'access_token']]
+     *                                              - Parameters are always send in query string
+     * @param {?Function}   options.authenticate    - Authentication handler (Promise)
      */
     constructor(options) {
         if (!options.url) throw new Error('Flora API url must be set');
@@ -45,7 +45,7 @@ class Client {
         }
 
         this.forceGetParams = ['client_id', 'action', 'access_token'];
-        if (options.forceGetParams && Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
+        if (Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
             options.forceGetParams
                 .filter(param => this.forceGetParams.indexOf(param) === -1)
                 .forEach(param => this.forceGetParams.push(param));
@@ -61,22 +61,22 @@ class Client {
     /**
      * Execute request against configured Flora instance.
      *
-     * @param {Object}              request                     - Request configuration object
-     * @param {string}              request.resource            - Resource name
-     * @param {(number|string)=}    request.id                  - Unique identifier of an item
-     * @param {string=}             [request.format=json]       - Response format
-     * @param {string=}             [request.action=retrieve]   - API action
-     * @param {string=}             request.select              - Retrieve given resource attributes
-     * @param {string=}             request.filter              - Filter items by given criteria
-     * @param {string=}             request.order               - Order items by given criteria
-     * @param {number=}             request.limit               - Limit result set
-     * @param {number=}             request.page                - Paginate through result
-     * @param {string=}             request.search              - Search items by full text search
-     * @param {Object=}             request.data                - Send data as JSON
-     * @param {boolean=}            [request.cache=true]        - Use HTTP caching
-     * @param {string=}             request.httpMethod          - Explicitly overwrite HTTP method
-     * @param {Object=}             request.httpHeaders         - Additional HTTP headers
-     * @param {boolean=}            [request.authenticate=false]- Use the authentication handler on this request
+     * @param {Object}  request                     - Request configuration object
+     * @param {string}  request.resource            - Resource name
+     * @param {(number|string)=} request.id         - Unique identifier of an item
+     * @param {string=} [request.format=json]       - Response format
+     * @param {string=} [request.action=retrieve]   - API action
+     * @param {string=} request.select              - Retrieve given resource attributes
+     * @param {string=} request.filter              - Filter items by given criteria
+     * @param {string=} request.order               - Order items by given criteria
+     * @param {number=} request.limit               - Limit result set
+     * @param {number=} request.page                - Paginate through result
+     * @param {string=} request.search              - Search items by full text search
+     * @param {Object=} request.data                - Send data as JSON
+     * @param {boolean=}[request.cache=true]        - Use HTTP caching
+     * @param {string=} request.httpMethod          - Explicitly overwrite HTTP method
+     * @param {Object=} request.httpHeaders         - Additional HTTP headers
+     * @param {boolean=} [request.authenticate=false]- Use the authentication handler for request
      * @return {Promise}
      */
     execute(request) {
@@ -94,7 +94,7 @@ class Client {
         }
 
         return this._execute(request);
-    };
+    }
 
     _execute(request) {
         const skipCache = has(request, 'cache') && !!request.cache === false;
@@ -169,7 +169,7 @@ class Client {
         if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + (new Date()).getTime();
 
         return this.adapter.request(opts);
-    };
+    }
 }
 
 module.exports = Client;
