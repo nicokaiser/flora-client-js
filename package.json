@@ -36,7 +36,6 @@
     "eslint-plugin-import": "^2.14.0",
     "grunt": "^1.0.3",
     "grunt-cli": "^1.2.0",
-    "grunt-contrib-uglify": "^3.3.0",
     "grunt-karma": "^2.0.0",
     "grunt-mocha-istanbul": "^5.0.2",
     "grunt-mocha-test": "^0.13.3",
