@@ -35,7 +35,6 @@
     "escodegen": "^1.11.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "esprima": "^4.0.1",
     "grunt": "^1.0.3",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-uglify": "^3.3.0",
