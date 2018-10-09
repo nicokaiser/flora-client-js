@@ -38,15 +38,6 @@ module.exports = function (grunt) {
             }
         },
 
-        jsdoc: {
-            dist: {
-                src: ['src/**/*.js'],
-                options: {
-                    destination: 'build/docs'
-                }
-            }
-        },
-
         karma: {
             browserAMD: {
                 configFile: 'karma.conf.js',
@@ -90,8 +81,6 @@ module.exports = function (grunt) {
     // browser tests
     grunt.registerTask('test-browser', ['karma:browserGlobalVariable', 'karma:browserAMD']);
     grunt.registerTask('test-browser-bamboo', 'karma:browserAMDBamboo');
-
-    grunt.registerTask('doc', 'jsdoc');
 
     grunt.registerTask('test', ['test-node', 'test-browser']);
 

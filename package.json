@@ -6,7 +6,6 @@
   "browser": "dist/index.browser.js",
   "scripts": {
     "test": "grunt test",
-    "doc": "grunt doc",
     "lint": "eslint src/ build/",
     "build": "webpack --mode=production --progress"
   },
@@ -41,7 +40,6 @@
     "grunt-cli": "^1.2.0",
     "grunt-contrib-uglify": "^3.3.0",
     "grunt-env": "^0.4.4",
-    "grunt-jsdoc": "^2.2.1",
     "grunt-karma": "^2.0.0",
     "grunt-mkdir": "^1.0.0",
     "grunt-mocha-istanbul": "^5.0.2",
