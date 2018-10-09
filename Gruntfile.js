@@ -11,10 +11,6 @@ module.exports = function (grunt) {
             }
         },
 
-        eslint: {
-            target: ['src/**/*.js']
-        },
-
         mochaTest: {
             node: {
                 options: {
@@ -44,7 +40,7 @@ module.exports = function (grunt) {
 
         jsdoc: {
             dist: {
-                src: '<%= eslint.target %>',
+                src: ['src/**/*.js'],
                 options: {
                     destination: 'build/docs'
                 }
@@ -95,7 +91,6 @@ module.exports = function (grunt) {
     grunt.registerTask('test-browser', ['karma:browserGlobalVariable', 'karma:browserAMD']);
     grunt.registerTask('test-browser-bamboo', 'karma:browserAMDBamboo');
 
-    grunt.registerTask('lint', 'eslint');
     grunt.registerTask('doc', 'jsdoc');
 
     grunt.registerTask('test', ['test-node', 'test-browser']);
