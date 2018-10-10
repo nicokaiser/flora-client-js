@@ -29,6 +29,11 @@
       "email": "marco.baumgartl@boerse-go.de"
     }
   ],
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "author": "BörseGo AG",
   "license": "MIT",
   "devDependencies": {
