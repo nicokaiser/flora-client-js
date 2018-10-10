@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack --mode=production --progress",
     "lint": "eslint src/ build/",
-    "prepack": "npm run test && npm run build",
+    "prepublishOnly": "npm run test && npm run build",
     "test:browser": "karma start --reporters mocha",
     "test:browser-bamboo": "karma start --reporters bamboo",
     "test:node": "mocha --reporter spec test/flora-client-node.spec.js",
