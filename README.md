@@ -15,3 +15,8 @@ client.execute({
     limit: 15
 }).then(response => console.log(response));
 ```
+
+License
+-------
+
+[MIT](LICENSE)
