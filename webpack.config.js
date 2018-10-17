@@ -18,6 +18,7 @@ module.exports = [{
     devtool: 'source-map',
     output: {
         filename: 'index.node.js',
-        path: DIST_DIR
+        path: DIST_DIR,
+        libraryTarget: 'commonjs2'
     }
 }];
