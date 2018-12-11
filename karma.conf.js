@@ -2,6 +2,7 @@
 // Generated on Tue Mar 31 2015 17:38:35 GMT+0200 (CEST)
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
+process.env.FIREFOX_BIN = require('puppeteer-firefox').executablePath();
 
 module.exports = function (config) {
     'use strict';
@@ -57,12 +58,16 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['HeadlessChrome'],
+        browsers: ['HeadlessChrome', 'HeadlessFirefox'],
 
         customLaunchers: {
             HeadlessChrome: {
                 base: 'ChromeHeadless',
                 flags: ['--no-sandbox']
+            },
+            HeadlessFirefox: {
+                base: 'Firefox',
+                flags: ['-headless']
             }
         },
 
