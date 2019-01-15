@@ -21,7 +21,7 @@ class Client {
      * @param {?Object} options.defaultParams       - Parameters added to each request automatically
      * @param {?Array}  [options.forceGetParams=['client_id', 'action', 'access_token']]
      *                                              - Parameters are always send in query string
-     * @param {?Function}   options.authenticate    - Authentication handler (Promise)
+     * @param {?Function}   options.auth            - Auth handler (Promise)
      */
     constructor(options) {
         if (!options.url) throw new Error('Flora API url must be set');
@@ -51,8 +51,8 @@ class Client {
                 .forEach(param => this.forceGetParams.push(param));
         }
 
-        if (options.authenticate && typeof options.authenticate === 'function') {
-            this.authenticate = options.authenticate;
+        if (options.auth && typeof options.auth === 'function') {
+            this.auth = options.auth;
         }
 
         this.adapter = options.adapter;
@@ -84,13 +84,13 @@ class Client {
             return Promise.reject(new Error('Request id must be of type number or string'));
         }
 
-        if (request.authenticate) {
-            if (!this.authenticate) {
-                return Promise.reject(new Error('Authenticated requests require an authentication handler'));
+        if (request.auth) {
+            if (!this.auth) {
+                return Promise.reject(new Error('Auth requests require an auth handler'));
             }
 
             request.httpHeaders = request.httpHeaders || {};
-            return this.authenticate(request).then(() => this._execute(request));
+            return this.auth(request).then(() => this._execute(request));
         }
 
         return this._execute(request);
@@ -124,7 +124,7 @@ class Client {
 
         opts.params = Object.keys(request)
             .filter(key => has(request, key))
-            .filter(key => ['authenticate', 'httpHeaders'].indexOf(key) === -1)
+            .filter(key => ['auth', 'httpHeaders'].indexOf(key) === -1)
             .reduce((acc, key) => {
                 acc[key] = request[key];
                 return acc;

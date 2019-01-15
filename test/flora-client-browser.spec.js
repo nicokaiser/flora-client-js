@@ -209,7 +209,7 @@ describe('Flora client', () => {
         });
     });
 
-    describe('authentication', () => {
+    describe('auth', () => {
         let server;
 
         beforeEach(() => {
@@ -225,13 +225,13 @@ describe('Flora client', () => {
         afterEach(() => server.restore());
 
         it('should call handler function if authentication option is enabled', done => {
-            const authenticate = floraReq => {
+            const auth = floraReq => {
                 floraReq.httpHeaders.Authorization = 'Bearer __token__';
                 return Promise.resolve();
             };
 
-            (new FloraClient({ url, authenticate }))
-                .execute({ resource: 'user', authenticate: true })
+            (new FloraClient({ url, auth }))
+                .execute({ resource: 'user', auth: true })
                 .then(() => {
                     expect(server.requests).to.have.length(1);
                     expect(server.requests[0]).to.have.property('requestHeaders')
@@ -242,13 +242,13 @@ describe('Flora client', () => {
         });
 
         it('should add access_token parameter', done => {
-            const authenticate = floraReq => {
+            const auth = floraReq => {
                 floraReq.access_token = '__token__';
                 return Promise.resolve();
             };
 
-            (new FloraClient({ url, authenticate }))
-                .execute({ resource: 'user', id: 1337, action: 'update', authenticate: true })
+            (new FloraClient({ url, auth }))
+                .execute({ resource: 'user', id: 1337, action: 'update', auth: true })
                 .then(() => {
                     expect(server.requests).to.have.length(1);
                     expect(server.requests[0]).to.have.property('url')
@@ -258,24 +258,24 @@ describe('Flora client', () => {
                 .catch(done);
         });
 
-        it('should reject request if authentication handler is not set', done => {
+        it('should reject request if auth handler is not set', done => {
             (new FloraClient({ url }))
-                .execute({ resource: 'user', authenticate: true })
+                .execute({ resource: 'user', auth: true })
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch(err => {
                     expect(err).to.be.instanceOf(Error)
                         .and.to.have.property('message')
-                        .and.to.contain('Authenticated requests require an authentication handler');
+                        .and.to.contain('Auth requests require an auth handler');
                     done();
                 });
         });
 
-        it('should not add authenticate option as request parameter', done => {
-            (new FloraClient({ url, authenticate: sinon.stub().resolves() }))
-                .execute({ resource: 'user', authenticate: true })
+        it('should not add auth option as request parameter', done => {
+            (new FloraClient({ url, auth: sinon.stub().resolves() }))
+                .execute({ resource: 'user', auth: true })
                 .then(() => {
                     expect(server.requests[0]).to.have.property('url')
-                        .and.to.not.contain('authenticate=');
+                        .and.to.not.contain('auth=');
                     done();
                 })
                 .catch(done);
