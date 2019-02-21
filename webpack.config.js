@@ -7,6 +7,15 @@ module.exports = [{
     target: 'web',
     entry: path.join(BUILD_DIR, 'browser.js'),
     devtool: 'source-map',
+    module: {
+        rules: [{
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+                loader: "babel-loader"
+            }
+        }]
+    },
     output: {
         filename: 'index.browser.js',
         path: DIST_DIR,
