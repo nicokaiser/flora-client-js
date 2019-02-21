@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es5", // Compatible with ES5
+    "sourceMap": true, // Generates corresponding *.js.map files -> makes it possible to debug TS files during runtime
+    "outDir": "./dist/", // Emit all of the output files in built folder
+    "allowJs": true, // Accept JavaScript as inputs
+    "noEmitOnError": true, // TypeScript does not compile into JavaScript in case of errors
+    "allowUnreachableCode": false, // Does not allow unreachable code
+    "strict": true, // strict types
+    "resolveJsonModule": true, //allow import of json
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true
+  },
+  "include": [
+    "src/"
+  ]
+}

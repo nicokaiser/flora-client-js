@@ -11,6 +11,14 @@ module.exports = [{
         filename: 'index.browser.js',
         path: DIST_DIR,
         libraryTarget: 'umd'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.[jt]sx?$/,
+                use: 'ts-loader'
+            }
+        ]
     }
 }, {
     target: 'node',
