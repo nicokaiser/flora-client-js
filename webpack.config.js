@@ -21,16 +21,4 @@ module.exports = [{
         path: DIST_DIR,
         libraryTarget: 'commonjs2'
     }
-}, {
-    target: 'node',
-    entry: path.join(BUILD_DIR, 'app.js'),
-    devtool: 'source-map',
-    output: {
-        filename: 'index.app.js',
-        path: DIST_DIR,
-        libraryTarget: 'commonjs2'
-    },
-    externals: {
-        ajax: 'ajax'
-    }
 }];
