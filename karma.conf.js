@@ -16,7 +16,8 @@ module.exports = function (config) {
         frameworks: ['mocha'], // order of plugins is important
 
         files: [
-            'test/flora-client-browser.spec.js'
+            'test/flora-client-browser.spec.js',
+            'test/stringify.spec.js'
         ],
 
         // list of files to exclude
@@ -27,7 +28,8 @@ module.exports = function (config) {
         preprocessors: {
             // add webpack as preprocessor
             'build/browser.js': ['webpack'],
-            'test/flora-client-browser.spec.js': ['webpack']
+            'test/flora-client-browser.spec.js': ['webpack'],
+            'test/stringify.spec.js': ['webpack']
         },
 
         webpack: {

@@ -59,9 +59,18 @@ describe('Flora client', () => {
                 .and.to.contain('action=awesome');
         });
 
-        it('should add select parameter to querystring', () => {
-            api.execute({ resource: 'user', select: 'id,address.city,comments(order=ts:desc)[id,body]' });
-            expect(requests[0].url).to.contain('select=id%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D');
+        Object.entries({
+            'string': 'id,address.city,comments(order=ts:desc)[id,body]',
+            'array/object': [
+                'id',
+                'address.city',
+                {'comments(order=ts:desc)': ['id', 'body']}
+            ]
+        }).forEach(([type, select]) => {
+            it(`should add select as ${type} parameter to querystring`, () => {
+                api.execute({resource: 'user', select});
+                expect(requests[0].url).to.contain('select=id%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D');
+            });
         });
 
         it('should add filter parameter to querystring', () => {

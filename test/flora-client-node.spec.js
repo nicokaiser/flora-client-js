@@ -72,14 +72,24 @@ describe('Flora node client', () => {
                 .catch(done);
         });
 
-        it('should add select parameter to query', done => {
-            req = nock(url)
-                .get('/user/?select=id%2Clastname%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D')
-                .reply(200, response);
+        Object.entries({
+            'string': 'id,lastname,address.city,comments(order=ts:desc)[id,body]',
+            'array/object': [
+                'id',
+                'lastname',
+                'address.city',
+                {'comments(order=ts:desc)': ['id', 'body']}
+            ]
+        }).forEach(([type, select]) => {
+            it(`should add select as ${type} parameter to query`, done => {
+                req = nock(url)
+                    .get('/user/?select=id%2Clastname%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D')
+                    .reply(200, response);
 
-            api.execute({ resource: 'user', select: 'id,lastname,address.city,comments(order=ts:desc)[id,body]' })
-                .then(() => done())
-                .catch(done);
+                api.execute({resource: 'user', select})
+                    .then(() => done())
+                    .catch(done);
+            });
         });
 
         it('should add filter parameter to query', done => {

@@ -6,6 +6,7 @@ const isEmpty = require('./util/isempty');
 const querystringify = require('./util/querystringify');
 const httpmethod = require('./util/httpmethod');
 const isValidRequestId = require('./util/valid-request-id');
+const stringify = require('./util/stringify');
 
 class Client {
     /**
@@ -112,6 +113,7 @@ class Client {
             return Promise.reject(new Error('Only JSON format supported'));
         }
 
+        if (typeof request.select === 'object') request.select = stringify(request.select);
         if (request.data) { // post property as JSON
             opts.jsonData = JSON.stringify(request.data);
             opts.headers['Content-Type'] = 'application/json';
