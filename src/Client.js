@@ -143,6 +143,7 @@ class Client {
 
         if (opts.params.action && opts.params.action === 'retrieve') delete opts.params.action;
         opts.httpMethod = !has(request, 'httpMethod') ? httpmethod(opts) : request.httpMethod;
+        if (opts.httpMethod === 'POST' && !opts.jsonData) opts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         if (this.forceGetParams.length) {
             getParams = this.forceGetParams

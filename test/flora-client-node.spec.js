@@ -163,8 +163,9 @@ describe('Flora node client', () => {
                 }
             };
 
-            req = nock(url)
-                .matchHeader('Content-Type', /application\/json/)
+            req = nock(url, {
+                    reqheaders: { 'content-type': 'application/json' }
+                })
                 .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
                 .query({ action: 'create' })
                 .reply(200, response);
@@ -196,7 +197,9 @@ describe('Flora node client', () => {
             });
 
             it('should use POST for other actions than "retrieve"', done => {
-                req = nock(url)
+                req = nock(url, {
+                        reqheaders: { 'content-type': header => header.includes('application/x-www-form-urlencoded') }
+                    })
                     .post('/user/1337')
                     .query({ action: 'lock' })
                     .reply(200, response);

@@ -169,8 +169,11 @@ describe('Flora client', () => {
 
             it('should use POST for other actions than "retrieve"', () => {
                 api.execute({ resource: 'user', id: 1337, action: 'lock' });
+
                 expect(requests[0]).to.have.property('method', 'POST');
                 expect(requests[0].requestBody).to.be.undefined;
+                expect(requests[0].requestHeaders).to.have.property('Content-Type')
+                    .and.to.contain('application/x-www-form-urlencoded');
             });
 
             it('should explicitly overwrite method by parameter', () => {
