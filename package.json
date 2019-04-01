@@ -35,15 +35,15 @@
   "author": "BörseGo AG",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@babel/preset-env": "^7.3.4",
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/nock": "^9.3.1",
-    "@types/sinon": "^7.0.8",
+    "@types/sinon": "^7.0.11",
     "babel-loader": "^8.0.5",
     "chai": "^4.1.2",
-    "eslint": "^5.15.1",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "karma": "^4.0.1",
@@ -53,10 +53,10 @@
     "karma-webpack": "^4.0.0-rc.6",
     "mocha": "^6.0.2",
     "nock": "^10.0.6",
-    "puppeteer": "^1.13.0",
-    "sinon": "^7.2.7",
+    "puppeteer": "^1.14.0",
+    "sinon": "^7.3.1",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3"
+    "webpack-cli": "^3.3.0"
   },
   "dependencies": {
     "has": "^1.0.3"
