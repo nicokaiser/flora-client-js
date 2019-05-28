@@ -33,6 +33,7 @@ class Xhr {
         }
 
         return new Promise((resolve, reject) => {
+            xhr.addEventListener('error', () => reject(new Error('Request failed')));
             xhr.addEventListener('timeout', () => reject(new Error(`Request timed out after ${this.timeout} milliseconds`)));
 
             xhr.addEventListener('load', () => {

@@ -390,6 +390,19 @@ describe('Flora client', () => {
 
             server.respond();
         });
+
+        it('should handle request errors', done => {
+            server.respondWith(xhr => xhr.error());
+
+            api.execute({ resource: 'article' })
+                .then(() => done(new Error('Expected promise to reject')))
+                .catch(err => {
+                    expect(err).to.be.instanceOf(Error).with.property('message', 'Request failed');
+                    done();
+                });
+
+            server.respond();
+        });
     });
 
     describe('timeouts', () => {
