@@ -37,7 +37,12 @@ class Xhr {
             xhr.addEventListener('timeout', () => reject(new Error(`Request timed out after ${this.timeout} milliseconds`)));
 
             xhr.addEventListener('load', () => {
+                const contentType = xhr.getResponseHeader('Content-Type');
                 let response;
+
+                if (contentType !== 'application/json') {
+                    return reject(new Error(`Received response with invalid content type: "${contentType}"`));
+                }
 
                 try {
                     response = JSON.parse(xhr.responseText);

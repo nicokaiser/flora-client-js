@@ -343,6 +343,20 @@ describe('Flora client', () => {
             server.respond();
         });
 
+        it('should not try to parse JSON if content-type doesn\'t match', done => {
+            server.respondWith([500, {'Content-Type': 'text/html'}, 'Internal Server Error']);
+
+            api.execute({ resource: 'user' })
+                .then(() => done(new Error('Expected promise to reject')))
+                .catch(err => {
+                    expect(err).to.be.instanceOf(Error)
+                        .with.property('message', 'Received response with invalid content type: "text/html"');
+                    done();
+                });
+
+            server.respond();
+        });
+
         it('should add response to error object', done => {
             const floraReq = {
                 resource: 'user',
