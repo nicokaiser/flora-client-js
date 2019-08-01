@@ -413,6 +413,20 @@ describe('Flora node client', () => {
                     done();
                 });
         });
+
+        it('should not try to parse JSON if content-type doesn\'t match', done => {
+            req = nock(url)
+                .get('/user/')
+                .reply(500, 'Internal Server Error', { 'Content-Type': 'text/html' });
+
+            api.execute({ resource: 'user' })
+                .then(() => done(new Error('Expected promise to reject')))
+                .catch(err => {
+                    expect(err).to.be.instanceOf(Error)
+                        .with.property('message', 'Received response with invalid content type: "text/html"');
+                    done();
+                });
+        });
     });
 
     describe('authentication', () => {

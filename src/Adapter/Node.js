@@ -34,7 +34,12 @@ class Node {
                 res.on('data', (chunk) => { str += chunk; });
 
                 res.on('end', () => {
+                    const { headers: { 'content-type': contentType } } = res;
                     let response;
+
+                    if (contentType !== 'application/json') {
+                        return reject(new Error(`Received response with invalid content type: "${contentType}"`));
+                    }
 
                     try {
                         response = JSON.parse(str);
