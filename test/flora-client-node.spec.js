@@ -403,12 +403,13 @@ describe('Flora node client', () => {
         it('should trigger an error if JSON cannot be parsed', done => {
             req = nock(url)
                 .get('/user/')
-                .reply(200, 'foobar');
+                .reply(200, '["test": 123]');
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch(err => {
-                    expect(err).to.be.instanceOf(Error);
+                    expect(err).to.be.instanceOf(SyntaxError)
+                        .with.property('message', 'Unexpected token : in JSON at position 7');
                     done();
                 });
         });

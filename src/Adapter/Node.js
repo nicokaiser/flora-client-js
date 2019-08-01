@@ -39,7 +39,7 @@ class Node {
                     try {
                         response = JSON.parse(str);
                     } catch (e) {
-                        return reject(new Error(`Couldn't parse response: ${e.message}`));
+                        return reject(e);
                     }
 
                     if (res.statusCode < 400) return resolve(response);
