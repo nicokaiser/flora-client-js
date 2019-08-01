@@ -329,22 +329,14 @@ describe('Flora client', () => {
             server.respond();
         });
 
-        it('should reject promise with error', done => {
-            const serverResponse = JSON.stringify({
-                meta: {},
-                data: null,
-                error: {
-                    message: 'foobar'
-                }
-            });
-
-            server.respondWith([500, {'Content-Type': 'application/json'}, serverResponse]);
+        it('should reject promise if JSON cannot be parsed', done => {
+            server.respondWith([200, {'Content-Type': 'application/json'}, '["test": 123]']);
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch(err => {
-                    expect(err).to.be.instanceof(Error);
-                    expect(err.message).to.equal('foobar');
+                    expect(err).to.be.instanceof(SyntaxError)
+                        .with.property('message', 'Unexpected token : in JSON at position 7');
                     done();
                 });
 
