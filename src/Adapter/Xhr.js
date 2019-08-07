@@ -40,7 +40,7 @@ class Xhr {
                 const contentType = xhr.getResponseHeader('Content-Type');
                 let response;
 
-                if (contentType !== 'application/json') {
+                if (contentType.indexOf('application/json') !== 0) {
                     return reject(new Error(`Received response with invalid content type: "${contentType}"`));
                 }
 

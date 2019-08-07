@@ -37,7 +37,7 @@ class Node {
                     const { headers: { 'content-type': contentType } } = res;
                     let response;
 
-                    if (contentType !== 'application/json') {
+                    if (!contentType.startsWith('application/json')) {
                         return reject(new Error(`Received response with invalid content type: "${contentType}"`));
                     }
 

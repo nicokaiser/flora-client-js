@@ -33,7 +33,7 @@ describe('Flora node client', () => {
         it('should add resource to path', done => {
             req = nock(url)
                 .get('/user/')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(() => done())
@@ -43,7 +43,7 @@ describe('Flora node client', () => {
         it('should add id to path', done => {
             req = nock(url)
                 .get('/user/1337')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', id: 1337 })
                 .then(() => done())
@@ -54,7 +54,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .get('/user/')
                 .query((queryObj) => !queryObj.hasOwnProperty('action'))
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', action: 'retrieve' })
                 .then(() => done())
@@ -65,7 +65,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .post('/user/1337')
                 .query({ action: 'update' })
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', id: 1337, action: 'update'})
                 .then(() => done())
@@ -84,7 +84,7 @@ describe('Flora node client', () => {
             it(`should add select as ${type} parameter to query`, done => {
                 req = nock(url)
                     .get('/user/?select=id%2Clastname%2Caddress.city%2Ccomments(order%3Dts%3Adesc)%5Bid%2Cbody%5D')
-                    .reply(200, response, { 'Content-Type': 'application/json' });
+                    .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
                 api.execute({resource: 'user', select})
                     .then(() => done())
@@ -95,7 +95,7 @@ describe('Flora node client', () => {
         it('should add filter parameter to query', done => {
             req = nock(url)
                 .get('/user/?filter=address%5Bcountry.iso2%3DDE%20AND%20city%3DMunich%5D%20OR%20profession%3DTrader')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', filter: 'address[country.iso2=DE AND city=Munich] OR profession=Trader' })
                 .then(() => done())
@@ -105,7 +105,7 @@ describe('Flora node client', () => {
         it('should add order parameter to query', done => {
             req = nock(url)
                 .get('/user/?order=lastname%3Aasc%2Cfirstname%3Adesc')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', order: 'lastname:asc,firstname:desc' })
                 .then(() => done())
@@ -115,7 +115,7 @@ describe('Flora node client', () => {
         it('should add limit parameter to query', done => {
             req = nock(url)
                 .get('/user/?limit=15')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', limit: 15 })
                 .then(() => done())
@@ -125,7 +125,7 @@ describe('Flora node client', () => {
         it('should add page parameter to query', done => {
             req = nock(url)
                 .get('/user/?page=2')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', page: 2 })
                 .then(() => done())
@@ -135,7 +135,7 @@ describe('Flora node client', () => {
         it('should add search parameter to query', done => {
             req = nock(url)
                 .get('/user/?search=full%20text%20search')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', search: 'full text search' })
                 .then(() => done())
@@ -146,7 +146,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .filteringPath(/_=\d+/, '_=xxx')
                 .get('/user/?_=xxx')
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', cache: false })
                 .then(() => done())
@@ -168,7 +168,7 @@ describe('Flora node client', () => {
                 })
                 .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
                 .query({ action: 'create' })
-                .reply(200, response, { 'Content-Type': 'application/json' });
+                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute(floraReq)
                 .then(() => done())
@@ -179,7 +179,7 @@ describe('Flora node client', () => {
             it('should use GET for "retrieve" actions', done => {
                 req = nock(url)
                     .get('/user/1337')
-                    .reply(200, response, { 'Content-Type': 'application/json' });
+                    .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
                 api.execute({ resource: 'user', id: 1337, action: 'retrieve' })
                     .then(() => done())
@@ -202,7 +202,7 @@ describe('Flora node client', () => {
                     })
                     .post('/user/1337')
                     .query({ action: 'lock' })
-                    .reply(200, response, { 'Content-Type': 'application/json' });
+                    .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
                 api.execute({ resource: 'user', id: 1337, action: 'lock' })
                     .then(() => done())
@@ -212,7 +212,7 @@ describe('Flora node client', () => {
             it('should explicitly overwrite method by parameter', done => {
                 req = nock(url)
                     .head('/user/1337')
-                    .reply(200, response, { 'Content-Type': 'application/json' });
+                    .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
                 api.execute({ resource: 'user', id: 1337, httpMethod: 'HEAD' })
                     .then(() => done())
@@ -244,7 +244,7 @@ describe('Flora node client', () => {
         it('should support default parameters', done => {
             req = nock(url)
                 .get('/user/1337?param=abc')
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, defaultParams: { param: 'abc' } }))
                 .execute({ resource: 'user', id: 1337 })
@@ -255,7 +255,7 @@ describe('Flora node client', () => {
         it('should use request parameter if default exists with same name', done => {
             req = nock(url)
                 .get('/user/1337?param=xyz')
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, defaultParams: { param: 'abc' } }))
                 .execute({ resource: 'user', id: 1337, param: 'xyz' })
@@ -279,7 +279,7 @@ describe('Flora node client', () => {
                     client_id: 1,
                     action: 'create'
                 })
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, defaultParams: { client_id: 1 }, forceGetParams: ['client_id']}))
                 .execute(floraReq)
@@ -291,7 +291,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .get('/user/')
                 .query(queryObj => !queryObj.hasOwnProperty('httpHeaders'))
-                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json' });
+                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', httpHeaders: { 'X-Awesome': 'test' }})
                 .then(() => done())
@@ -330,7 +330,7 @@ describe('Flora node client', () => {
 
             req = nock(url)
                 .get('/user/')
-                .reply(200, { meta: {}, data: data }, { 'Content-Type': 'application/json' });
+                .reply(200, { meta: {}, data: data }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(response => {
@@ -349,7 +349,7 @@ describe('Flora node client', () => {
                     error: {
                         message: 'foobar'
                     }
-                }, { 'Content-Type': 'application/json' });
+                }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
@@ -379,7 +379,7 @@ describe('Flora node client', () => {
                             info: true
                         }
                     }
-                }, { 'Content-Type': 'application/json' });
+                }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute(floraReq)
                 .then(() => done(new Error('Expected promise to reject')))
@@ -403,7 +403,7 @@ describe('Flora node client', () => {
         it('should trigger an error if JSON cannot be parsed', done => {
             req = nock(url)
                 .get('/user/')
-                .reply(200, '["test": 123]', { 'Content-Type': 'application/json' });
+                .reply(200, '["test": 123]', { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
@@ -438,7 +438,7 @@ describe('Flora node client', () => {
 
             req = nock(url, { reqheaders: { Authorization: 'Bearer __token__' } })
                 .get('/user/')
-                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json' });
+                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, auth }))
                 .execute({ resource: 'user', auth: true })
@@ -458,7 +458,7 @@ describe('Flora node client', () => {
                     access_token: '__token__',
                     action: 'update'
                 })
-                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json' });
+                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, auth }))
                 .execute({ resource: 'user', id: 1337, action: 'update', auth: true })
@@ -484,7 +484,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .get('/user/')
                 .query(queryObj => !queryObj.hasOwnProperty('auth'))
-                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json' });
+                .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, auth }))
                 .execute({ resource: 'user', auth: true })
@@ -512,7 +512,7 @@ describe('Flora node client', () => {
 
             req = nock(httpsUrl)
                 .get('/user/')
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             secureApi.execute({ resource: 'user' })
                 .then(() => done())
@@ -525,7 +525,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .matchHeader('Referer', /^file:\/\/\/.*/)
                 .get('/user/')
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(() => done())
@@ -538,7 +538,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .get('/user/')
                 .socketDelay(20000)
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
@@ -554,7 +554,7 @@ describe('Flora node client', () => {
             req = nock(url)
                 .get('/user/')
                 .socketDelay(6000)
-                .reply(200, {}, { 'Content-Type': 'application/json' });
+                .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, timeout: 5000 }))
                 .execute({ resource: 'user' })

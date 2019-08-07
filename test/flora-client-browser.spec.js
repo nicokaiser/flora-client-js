@@ -306,7 +306,7 @@ describe('Flora client', () => {
         });
 
         it('should be a promise', done => {
-            server.respondWith([200, { 'Content-Type': 'application/json' }, '{}']);
+            server.respondWith([200, { 'Content-Type': 'application/json; charset=utf-8' }, '{}']);
             const response = api.execute({ resource: 'user' });
             expect(response).to.be.instanceof(Promise);
             server.respond();
@@ -317,7 +317,7 @@ describe('Flora client', () => {
             const data = [{ id: 1337, firstname: 'John', lastname: 'Doe' }];
             const serverResponse = JSON.stringify({ meta: {}, data: data });
 
-            server.respondWith([200, { 'Content-Type': 'application/json' }, serverResponse]);
+            server.respondWith([200, { 'Content-Type': 'application/json; charset=utf-8' }, serverResponse]);
 
             api.execute({ resource: 'user' })
                 .then(response => {
@@ -330,7 +330,7 @@ describe('Flora client', () => {
         });
 
         it('should reject promise if JSON cannot be parsed', done => {
-            server.respondWith([200, {'Content-Type': 'application/json'}, '["test": 123]']);
+            server.respondWith([200, {'Content-Type': 'application/json; charset=utf-8'}, '["test": 123]']);
 
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
@@ -374,7 +374,7 @@ describe('Flora client', () => {
                 }
             });
 
-            server.respondWith([400, {'Content-Type': 'application/json'}, serverResponse]);
+            server.respondWith([400, {'Content-Type': 'application/json; charset=utf-8'}, serverResponse]);
 
             api.execute(floraReq)
                 .then(() => done(new Error('Expected promise to reject')))
