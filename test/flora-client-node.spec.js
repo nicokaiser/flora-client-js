@@ -112,14 +112,19 @@ describe('Flora node client', () => {
                 .catch(done);
         });
 
-        it('should add limit parameter to query', done => {
-            req = nock(url)
-                .get('/user/?limit=15')
-                .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
+        Object.entries({
+            'should add non-falsy limit parameter to query': 15,
+            'should add falsy limit parameter to query': 0,
+        }).forEach(([description, limit]) => {
+            it(description, done => {
+                req = nock(url)
+                    .get(`/user/?limit=${limit}`)
+                    .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
-            api.execute({ resource: 'user', limit: 15 })
-                .then(() => done())
-                .catch(done);
+                api.execute({ resource: 'user', limit })
+                    .then(() => done())
+                    .catch(done);
+            });
         });
 
         it('should add page parameter to query', done => {

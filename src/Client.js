@@ -157,7 +157,7 @@ class Client {
 
         if (typeof opts.params === 'object' && !isEmpty(opts.params) && (opts.jsonData || opts.httpMethod === 'GET')) {
             getParams = Object.keys(opts.params)
-                .filter(key => has(opts.params, key) && opts.params[key])
+                .filter(key => has(opts.params, key))
                 .reduce((acc, key) => {
                     acc[key] = opts.params[key];
                     return acc;

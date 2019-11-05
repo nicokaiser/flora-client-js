@@ -78,9 +78,14 @@ describe('Flora client', () => {
             expect(requests[0].url).to.contain('filter=address%5Bcountry.iso2%3DDE%20AND%20city%3DMunich%5D');
         });
 
-        it('should add limit parameter to querystring', () => {
-            api.execute({ resource: 'user', limit: 15 });
-            expect(requests[0].url).to.contain('limit=15');
+        Object.entries({
+            'should add non-falsy limit parameter to querystring': 15,
+            'should add falsy limit parameter to query': 0,
+        }).forEach(([description, limit]) => {
+            it(description, () => {
+                api.execute({ resource: 'user', limit });
+                expect(requests[0].url).to.contain(`limit=${limit}`);
+            });
         });
 
         it('should add page parameter to querystring', () => {
