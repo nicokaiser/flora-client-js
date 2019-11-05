@@ -1,6 +1,6 @@
 {
   "name": "flora-client-js",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "JavaScript client for Flora based APIs",
   "main": "dist/index.node.js",
   "browser": "dist/index.browser.js",
