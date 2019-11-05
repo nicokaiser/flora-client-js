@@ -1,5 +1,6 @@
 'use strict';
 
+const has = require('has');
 const { expect } = require('chai');
 const nock = require('nock');
 const FloraClient = require('../build/node');
@@ -53,7 +54,7 @@ describe('Flora node client', () => {
         it('should treat action=retrieve as standard (and not transmit it)', done => {
             req = nock(url)
                 .get('/user/')
-                .query((queryObj) => !queryObj.hasOwnProperty('action'))
+                .query((queryObj) => !has(queryObj, 'action'))
                 .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', action: 'retrieve' })
@@ -295,7 +296,7 @@ describe('Flora node client', () => {
         it('should not add httpHeaders option to request params', done => {
             req = nock(url)
                 .get('/user/')
-                .query(queryObj => !queryObj.hasOwnProperty('httpHeaders'))
+                .query(queryObj => !has(queryObj, 'httpHeaders'))
                 .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user', httpHeaders: { 'X-Awesome': 'test' }})
@@ -488,7 +489,7 @@ describe('Flora node client', () => {
 
             req = nock(url)
                 .get('/user/')
-                .query(queryObj => !queryObj.hasOwnProperty('auth'))
+                .query(queryObj => !has(queryObj, 'auth'))
                 .reply(200, { meta: {}, data: [] }, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, auth }))
