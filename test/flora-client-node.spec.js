@@ -551,7 +551,7 @@ describe('Flora node client', () => {
                 .catch(err => {
                     expect(err)
                         .to.be.instanceOf(Error)
-                        .and.to.have.property('code', 'ECONNRESET');
+                        .and.to.have.property('code', 'ETIMEDOUT');
                     done();
                 });
         });
@@ -567,7 +567,7 @@ describe('Flora node client', () => {
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch(err => {
                     expect(err).to.be.instanceOf(Error)
-                        .and.to.have.property('code', 'ECONNRESET');
+                        .and.to.have.property('code', 'ETIMEDOUT');
                     done();
                 });
         });

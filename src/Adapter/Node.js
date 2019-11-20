@@ -60,7 +60,13 @@ class Node {
 
             if (postBody) req.write(postBody);
 
-            req.on('error', reject);
+            req.on('error', (err) => {
+                if (req.aborted) {
+                    err = new Error(`Request timed out after ${this.timeout} milliseconds`);
+                    err.code = 'ETIMEDOUT';
+                }
+                reject(err);
+            });
             req.end();
         });
     }
