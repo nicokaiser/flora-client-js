@@ -170,7 +170,10 @@ describe('Flora node client', () => {
             };
 
             req = nock(url, {
-                    reqheaders: { 'content-type': 'application/json' }
+                    reqheaders: {
+                        'content-type': 'application/json',
+                        'content-length': 44
+                    }
                 })
                 .post('/article/', '{"title":"Lorem Ipsum","author":{"id":1337}}')
                 .query({ action: 'create' })

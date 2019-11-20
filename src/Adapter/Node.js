@@ -26,6 +26,7 @@ class Node {
 
         if (cfg.jsonData) postBody = cfg.jsonData;
         if (cfg.params && method === 'POST') postBody = querystringify(cfg.params);
+        if (postBody) opts.headers['Content-Length'] = postBody.length;
 
         return new Promise((resolve, reject) => {
             const req = (cfg.url.indexOf('https:') === 0 ? https : http).request(opts, (res) => {
