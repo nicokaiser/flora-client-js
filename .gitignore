@@ -4,4 +4,3 @@ dist/
 node_modules/
 npm-debug.log
 mocha.json
-package-lock.json
