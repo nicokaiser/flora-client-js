@@ -355,7 +355,7 @@ describe('Flora client', () => {
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch(err => {
                     expect(err).to.be.instanceOf(Error)
-                        .with.property('message', 'Received response with invalid content type: "text/html"');
+                        .with.property('message', 'Server Error: Internal Server Error');
                     done();
                 });
 

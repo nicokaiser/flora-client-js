@@ -39,7 +39,8 @@ class Node {
                     let response;
 
                     if (!contentType.startsWith('application/json')) {
-                        return reject(new Error(`Received response with invalid content type: "${contentType}"`));
+                        if (res.statusCode < 400) return reject(new Error(`Server Error: Invalid content type: "${contentType}")`));
+                        return reject(new Error(`Server Error: ${res.statusMessage || `Invalid content type: "${contentType}"`}`));
                     }
 
                     try {
@@ -50,7 +51,7 @@ class Node {
 
                     if (res.statusCode < 400) return resolve(response);
 
-                    const msg = response.error && response.error.message ? response.error.message : 'error';
+                    const msg = response.error && response.error.message ? response.error.message : `Server Error: ${res.statusMessage || 'Invalid JSON'}`;
                     const err = new Error(msg);
                     err.response = response;
                     return reject(err);
