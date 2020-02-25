@@ -41,7 +41,8 @@ class Xhr {
                 let response;
 
                 if (contentType.indexOf('application/json') !== 0) {
-                    return reject(new Error(`Received response with invalid content type: "${contentType}"`));
+                    if (xhr.status < 400) return reject(new Error(`Server Error: Invalid content type: "${contentType}")`));
+                    return reject(new Error(`Server Error: ${xhr.statusText || `Invalid content type: "${contentType}"`}`));
                 }
 
                 try {
@@ -52,7 +53,7 @@ class Xhr {
 
                 if (xhr.status < 400) return resolve(response);
 
-                const msg = response.error && response.error.message ? response.error.message : 'error';
+                const msg = response.error && response.error.message ? response.error.message : `Server Error: ${xhr.statusText || 'Invalid JSON'}`;
                 const err = new Error(msg);
                 err.response = response;
                 return reject(err);
