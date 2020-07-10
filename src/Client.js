@@ -38,7 +38,7 @@ class Client {
 
         if (options.defaultParams && !isEmpty(options.defaultParams)) {
             this.defaultParams = Object.keys(options.defaultParams)
-                .filter(key => has(options.defaultParams, key))
+                .filter((key) => has(options.defaultParams, key))
                 .reduce((acc, key) => {
                     acc[key] = options.defaultParams[key];
                     return acc;
@@ -48,8 +48,8 @@ class Client {
         this.forceGetParams = ['client_id', 'action', 'access_token'];
         if (Array.isArray(options.forceGetParams) && options.forceGetParams.length) {
             options.forceGetParams
-                .filter(param => this.forceGetParams.indexOf(param) === -1)
-                .forEach(param => this.forceGetParams.push(param));
+                .filter((param) => this.forceGetParams.indexOf(param) === -1)
+                .forEach((param) => this.forceGetParams.push(param));
         }
 
         if (options.auth && typeof options.auth === 'function') {
@@ -121,12 +121,12 @@ class Client {
 
         // remove special keys from request before assembling Flora request parameters
         ['resource', 'id', 'cache', 'data']
-            .filter(key => has(request, key))
-            .forEach(key => delete request[key]);
+            .filter((key) => has(request, key))
+            .forEach((key) => delete request[key]);
 
         opts.params = Object.keys(request)
-            .filter(key => has(request, key))
-            .filter(key => ['auth', 'httpHeaders'].indexOf(key) === -1)
+            .filter((key) => has(request, key))
+            .filter((key) => ['auth', 'httpHeaders'].indexOf(key) === -1)
             .reduce((acc, key) => {
                 acc[key] = request[key];
                 return acc;
@@ -134,7 +134,7 @@ class Client {
 
         if (this.defaultParams) {
             opts.params = Object.keys(this.defaultParams)
-                .filter(key => !has(opts.params, key))
+                .filter((key) => !has(opts.params, key))
                 .reduce((acc, key) => {
                     acc[key] = this.defaultParams[key];
                     return acc;
@@ -147,7 +147,7 @@ class Client {
 
         if (this.forceGetParams.length) {
             getParams = this.forceGetParams
-                .filter(key => typeof opts.params[key] !== 'undefined')
+                .filter((key) => typeof opts.params[key] !== 'undefined')
                 .reduce((acc, key) => {
                     acc[key] = opts.params[key];
                     delete opts.params[key]; // TODO: move somewhere else
@@ -157,7 +157,7 @@ class Client {
 
         if (typeof opts.params === 'object' && !isEmpty(opts.params) && (opts.jsonData || opts.httpMethod === 'GET')) {
             getParams = Object.keys(opts.params)
-                .filter(key => has(opts.params, key))
+                .filter((key) => has(opts.params, key))
                 .reduce((acc, key) => {
                     acc[key] = opts.params[key];
                     return acc;

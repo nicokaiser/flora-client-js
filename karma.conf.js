@@ -4,7 +4,7 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 // process.env.FIREFOX_BIN = require('puppeteer-firefox').executablePath();
 
-module.exports = function (config) {
+module.exports = function karmaConfig(config) {
     'use strict';
 
     config.set({
@@ -52,7 +52,6 @@ module.exports = function (config) {
         colors: true,
 
         // level of logging
-        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
         logLevel: config.LOG_INFO,
 
         // enable / disable watching file and executing tests whenever any file changes
@@ -60,17 +59,17 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['HeadlessChrome'/*, 'HeadlessFirefox'*/],
+        browsers: ['HeadlessChrome'/* , 'HeadlessFirefox' */],
 
         customLaunchers: {
             HeadlessChrome: {
                 base: 'ChromeHeadless',
                 flags: ['--no-sandbox']
-            }/*,
+            }/* ,
             HeadlessFirefox: {
                 base: 'Firefox',
                 flags: ['-headless']
-            }*/
+            } */
         },
 
         // Continuous Integration mode

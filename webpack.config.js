@@ -12,7 +12,21 @@ module.exports = [{
             test: /\.js$/,
             exclude: /node_modules/,
             use: {
-                loader: "babel-loader"
+                loader: 'babel-loader',
+                options: {
+                    presets: [
+                        ['@babel/preset-env', {
+                            targets: {
+                                browsers: [
+                                    'last 2 safari versions',
+                                    'last 2 chrome versions',
+                                    'last 2 firefox versions',
+                                    'ie >= 11'
+                                ]
+                            }
+                        }]
+                    ]
+                }
             }
         }]
     },

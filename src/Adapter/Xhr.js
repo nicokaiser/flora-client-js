@@ -22,8 +22,8 @@ class Xhr {
 
         if (!isEmpty(cfg.headers)) {
             Object.keys(cfg.headers)
-                .filter(header => has(cfg.headers, header))
-                .forEach(header => xhr.setRequestHeader(header, cfg.headers[header]));
+                .filter((header) => has(cfg.headers, header))
+                .forEach((header) => xhr.setRequestHeader(header, cfg.headers[header]));
         }
 
         if (cfg.httpMethod !== 'POST') xhr.send();
