@@ -543,10 +543,12 @@ describe('Flora node client', () => {
     });
 
     describe('timeouts', () => {
+        afterEach(() => nock.abortPendingRequests());
+
         it('should use default request timeout', done => {
             req = nock(url)
                 .get('/user/')
-                .socketDelay(20000)
+                .delayConnection(20000)
                 .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             api.execute({ resource: 'user' })
@@ -562,7 +564,7 @@ describe('Flora node client', () => {
         it('should use configurable request timeout', done => {
             req = nock(url)
                 .get('/user/')
-                .socketDelay(6000)
+                .delayConnection(6000)
                 .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
             (new FloraClient({ url, timeout: 5000 }))
