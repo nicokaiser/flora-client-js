@@ -29,11 +29,15 @@ class Node {
             const req = (cfg.url.indexOf('https:') === 0 ? https : http).request(cfg.url, { method, headers }, (res) => {
                 let str = '';
 
-                res.on('data', (chunk) => { str += chunk; });
+                res.on('data', (chunk) => {
+                    str += chunk;
+                });
 
                 res.on('end', () => {
-                    const { headers: { 'content-type': contentType } } = res;
                     let response;
+                    const {
+                        headers: { 'content-type': contentType },
+                    } = res;
 
                     if (!contentType.startsWith('application/json')) {
                         if (res.statusCode < 400) return reject(new Error(`Server Error: Invalid content type: "${contentType}")`));
@@ -48,7 +52,10 @@ class Node {
 
                     if (res.statusCode < 400) return resolve(response);
 
-                    const msg = response.error && response.error.message ? response.error.message : `Server Error: ${res.statusMessage || 'Invalid JSON'}`;
+                    const msg =
+                        response.error && response.error.message
+                            ? response.error.message
+                            : `Server Error: ${res.statusMessage || 'Invalid JSON'}`;
                     const err = new Error(msg);
                     err.response = response;
                     return reject(err);

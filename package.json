@@ -53,6 +53,7 @@
     "karma-webpack": "^4.0.2",
     "mocha": "^8.2.1",
     "nock": "^13.0.5",
+    "prettier": "^2.2.1",
     "puppeteer": "^5.5.0",
     "sinon": "^9.2.1",
     "webpack": "^4.43.0",

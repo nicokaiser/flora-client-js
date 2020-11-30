@@ -103,7 +103,7 @@ class Client {
             resource: request.resource,
             id: request.id,
             params: {},
-            headers: request.httpHeaders || {}
+            headers: request.httpHeaders || {},
         };
         let getParams;
 
@@ -114,15 +114,14 @@ class Client {
         }
 
         if (typeof request.select === 'object') request.select = stringify(request.select);
-        if (request.data) { // post property as JSON
+        if (request.data) {
+            // post property as JSON
             opts.jsonData = JSON.stringify(request.data);
             opts.headers['Content-Type'] = 'application/json';
         }
 
         // remove special keys from request before assembling Flora request parameters
-        ['resource', 'id', 'cache', 'data']
-            .filter((key) => has(request, key))
-            .forEach((key) => delete request[key]);
+        ['resource', 'id', 'cache', 'data'].filter((key) => has(request, key)).forEach((key) => delete request[key]);
 
         opts.params = Object.keys(request)
             .filter((key) => has(request, key))
@@ -169,7 +168,7 @@ class Client {
         if (!isEmpty(getParams)) opts.url += '?' + querystringify(getParams);
 
         // add cache breaker to bypass HTTP caching
-        if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + (new Date()).getTime();
+        if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + new Date().getTime();
 
         return this.adapter.request(opts);
     }
