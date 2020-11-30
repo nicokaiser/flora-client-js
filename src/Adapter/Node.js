@@ -15,18 +15,17 @@ class Node {
         this.timeout = opts.timeout;
     }
 
-    request(cfg) {
-        const { headers, httpMethod: method } = cfg;
+    request({ url, headers, httpMethod: method, params, jsonData }) {
         let postBody;
 
         headers.Referer = process.argv.length > 0 ? 'file://' + path.resolve(process.argv[1]) : '';
 
-        if (cfg.jsonData) postBody = cfg.jsonData;
-        if (cfg.params && method === 'POST') postBody = querystringify(cfg.params);
+        if (jsonData) postBody = jsonData;
+        if (params && method === 'POST') postBody = querystringify(params);
         if (postBody) headers['Content-Length'] = postBody.length;
 
         return new Promise((resolve, reject) => {
-            const req = (cfg.url.indexOf('https:') === 0 ? https : http).request(cfg.url, { method, headers }, (res) => {
+            const req = (url.indexOf('https:') === 0 ? https : http).request(url, { method, headers }, (res) => {
                 let str = '';
 
                 res.on('data', (chunk) => {
