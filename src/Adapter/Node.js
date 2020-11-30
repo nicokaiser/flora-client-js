@@ -2,7 +2,6 @@
 
 const http = require('http');
 const https = require('https');
-const url = require('url');
 const path = require('path');
 
 const querystringify = require('../util/querystringify');
@@ -17,19 +16,17 @@ class Node {
     }
 
     request(cfg) {
-        const { headers } = cfg;
-        const method = cfg.httpMethod;
-        const opts = Object.assign(url.parse(cfg.url), { headers }, { method });
+        const { headers, httpMethod: method } = cfg;
         let postBody;
 
-        opts.headers.Referer = process.argv.length > 0 ? 'file://' + path.resolve(process.argv[1]) : '';
+        headers.Referer = process.argv.length > 0 ? 'file://' + path.resolve(process.argv[1]) : '';
 
         if (cfg.jsonData) postBody = cfg.jsonData;
         if (cfg.params && method === 'POST') postBody = querystringify(cfg.params);
-        if (postBody) opts.headers['Content-Length'] = postBody.length;
+        if (postBody) headers['Content-Length'] = postBody.length;
 
         return new Promise((resolve, reject) => {
-            const req = (cfg.url.indexOf('https:') === 0 ? https : http).request(opts, (res) => {
+            const req = (cfg.url.indexOf('https:') === 0 ? https : http).request(cfg.url, { method, headers }, (res) => {
                 let str = '';
 
                 res.on('data', (chunk) => { str += chunk; });
