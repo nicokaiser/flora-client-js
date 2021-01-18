@@ -1,7 +1,9 @@
 Flora JS client
 ================
 
-[![Build Status](https://travis-ci.org/godmodelabs/flora-client-js.svg?branch=master)](https://travis-ci.org/godmodelabs/flora-client-js)
+![](https://github.com/godmodelabs/flora-client-js/workflows/ci/badge.svg)
+[![NPM version](https://img.shields.io/npm/v/flora-client-js.svg?style=flat)](https://www.npmjs.com/package/flora-client-js)
+[![NPM downloads](https://img.shields.io/npm/dm/flora-client-js.svg?style=flat)](https://www.npmjs.com/package/flora-client-js)
 
 Easily access [Flora](https://github.com/godmodelabs/flora) based APIs.
 
