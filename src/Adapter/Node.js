@@ -15,7 +15,9 @@ class Node {
         this.timeout = opts.timeout;
     }
 
-    request({ url, headers, httpMethod: method, params, jsonData }) {
+    request({
+        url, headers, httpMethod: method, params, jsonData
+    }) {
         let postBody;
 
         headers.Referer = process.argv.length > 0 ? 'file://' + path.resolve(process.argv[1]) : '';
@@ -51,10 +53,9 @@ class Node {
 
                     if (res.statusCode < 400) return resolve(response);
 
-                    const msg =
-                        response.error && response.error.message
-                            ? response.error.message
-                            : `Server Error: ${res.statusMessage || 'Invalid JSON'}`;
+                    const msg = response.error && response.error.message
+                        ? response.error.message
+                        : `Server Error: ${res.statusMessage || 'Invalid JSON'}`;
                     const err = new Error(msg);
                     err.response = response;
                     return reject(err);

@@ -53,8 +53,7 @@ class Xhr {
 
                 if (xhr.status < 400) return resolve(response);
 
-                const msg =
-                    response.error && response.error.message ? response.error.message : `Server Error: ${xhr.statusText || 'Invalid JSON'}`;
+                const msg = response.error && response.error.message ? response.error.message : `Server Error: ${xhr.statusText || 'Invalid JSON'}`;
                 const err = new Error(msg);
                 err.response = response;
                 return reject(err);
