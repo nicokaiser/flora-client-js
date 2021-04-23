@@ -30,10 +30,17 @@ module.exports = [{
             }
         }]
     },
+    resolve: {
+        alias: {
+            sinon: 'sinon/pkg/sinon.js'
+        }
+    },
     output: {
         filename: 'index.browser.js',
         path: DIST_DIR,
-        libraryTarget: 'umd'
+        library: {
+            type: 'umd'
+        }
     }
 }, {
     target: 'node',
@@ -42,6 +49,8 @@ module.exports = [{
     output: {
         filename: 'index.node.js',
         path: DIST_DIR,
-        libraryTarget: 'commonjs2'
+        library: {
+            type: 'commonjs2'
+        }
     }
 }];

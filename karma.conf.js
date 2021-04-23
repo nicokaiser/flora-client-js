@@ -1,6 +1,10 @@
 // Karma configuration
 // Generated on Tue Mar 31 2015 17:38:35 GMT+0200 (CEST)
 
+const [webpackConfig] = require('./webpack.config');
+delete webpackConfig.entry;
+delete webpackConfig.output;
+
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 // process.env.FIREFOX_BIN = require('puppeteer-firefox').executablePath();
 
@@ -13,7 +17,7 @@ module.exports = function karmaConfig(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha'], // order of plugins is important
+        frameworks: ['webpack', 'mocha'], // order of plugins is important
 
         files: [
             'test/flora-client-browser.spec.js',
@@ -32,9 +36,7 @@ module.exports = function karmaConfig(config) {
             'test/stringify.spec.js': ['webpack']
         },
 
-        webpack: {
-            mode: 'development'
-        },
+        webpack: webpackConfig,
 
         webpackMiddleware: {
             stats: 'errors-only'
