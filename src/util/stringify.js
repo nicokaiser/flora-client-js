@@ -1,22 +1,21 @@
 'use strict';
 
+const entries = (obj) => {
+    const keys = Object.keys(obj);
+    let keysCount = keys.length;
+    const iter = new Array(keysCount);
+    while (keysCount--) iter[keysCount] = [keys[keysCount], obj[keys[keysCount]]];
+    return iter;
+};
+
 /**
  * @param {Array|Object|string} spec
  * @return string
  */
-
 function stringify(spec) {
     if (Array.isArray(spec)) {
         return spec.map(stringify).join(',');
     }
-
-    const entries = (obj) => {
-        const keys = Object.keys(obj);
-        let keysCount = keys.length;
-        const iter = new Array(keysCount);
-        while (keysCount--) iter[keysCount] = [keys[keysCount], obj[keys[keysCount]]];
-        return iter;
-    };
 
     if (typeof spec === 'object') {
         return entries(spec)
