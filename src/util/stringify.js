@@ -1,12 +1,14 @@
 'use strict';
 
-const entries = (obj) => {
-    const keys = Object.keys(obj);
-    let keysCount = keys.length;
-    const iter = new Array(keysCount);
-    while (keysCount--) iter[keysCount] = [keys[keysCount], obj[keys[keysCount]]];
-    return iter;
-};
+const entries = Object.entries
+    ? Object.entries
+    : (obj) => { // IE11 fallback
+        const keys = Object.keys(obj);
+        let keysCount = keys.length;
+        const iter = new Array(keysCount);
+        while (keysCount--) iter[keysCount] = [keys[keysCount], obj[keys[keysCount]]];
+        return iter;
+    };
 
 /**
  * @param {Array|Object|string} spec
