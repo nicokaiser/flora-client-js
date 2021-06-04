@@ -117,7 +117,7 @@ class Client {
         if (request.data) {
             // post property as JSON
             opts.jsonData = JSON.stringify(request.data);
-            opts.headers['Content-Type'] = 'application/json';
+            opts.headers['Content-Type'] = 'application/json; charset=utf-8';
         }
 
         // remove special keys from request before assembling Flora request parameters

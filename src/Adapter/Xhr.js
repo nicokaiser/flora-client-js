@@ -27,10 +27,7 @@ class Xhr {
         }
 
         if (cfg.httpMethod !== 'POST') xhr.send();
-        else {
-            xhr.setRequestHeader('Content-Type', 'application/' + (cfg.jsonData ? 'json' : 'x-www-form-urlencoded'));
-            xhr.send(cfg.params ? querystringify(cfg.params) : cfg.jsonData);
-        }
+        else xhr.send(cfg.params ? querystringify(cfg.params) : cfg.jsonData);
 
         return new Promise((resolve, reject) => {
             xhr.addEventListener('error', () => reject(new Error('Request failed')));

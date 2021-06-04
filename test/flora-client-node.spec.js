@@ -170,7 +170,7 @@ describe('Flora node client', () => {
 
             req = nock(url, {
                 reqheaders: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json; charset=utf-8',
                     'content-length': 44
                 }
             })
@@ -195,7 +195,7 @@ describe('Flora node client', () => {
 
             req = nock(url, {
                 reqheaders: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json; charset=utf-8',
                     'content-length': 64
                 }
             })

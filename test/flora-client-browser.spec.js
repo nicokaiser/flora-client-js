@@ -116,8 +116,7 @@ describe('Flora client', () => {
             const request = requests[0];
             expect(request.method).to.equal('POST');
             expect(request.url).to.contain('action=create');
-            expect(request.requestHeaders).to.include.keys('Content-Type');
-            expect(request.requestHeaders['Content-Type']).to.contain('application/json');
+            expect(request.requestHeaders).to.have.property('Content-Type', 'application/json;charset=utf-8');
             expect(request.requestBody).to.equal('{"title":"Lorem Ipsum","author":{"id":1337}}');
         });
 
