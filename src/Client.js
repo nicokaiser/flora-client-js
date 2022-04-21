@@ -120,12 +120,9 @@ class Client {
             opts.headers['Content-Type'] = 'application/json; charset=utf-8';
         }
 
-        // remove special keys from request before assembling Flora request parameters
-        ['resource', 'id', 'cache', 'data'].filter((key) => has(request, key)).forEach((key) => delete request[key]);
-
         opts.params = Object.keys(request)
             .filter((key) => has(request, key))
-            .filter((key) => ['auth', 'httpHeaders'].indexOf(key) === -1)
+            .filter((key) => ['resource', 'id', 'cache', 'data', 'auth', 'httpMethod', 'httpHeaders'].indexOf(key) === -1)
             .reduce((acc, key) => {
                 acc[key] = request[key];
                 return acc;
@@ -141,8 +138,8 @@ class Client {
         }
 
         if (opts.params.action && opts.params.action === 'retrieve') delete opts.params.action;
-        opts.httpMethod = !has(request, 'httpMethod') ? httpmethod(opts) : request.httpMethod;
-        if (opts.httpMethod === 'POST' && !opts.jsonData) opts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        const httpMethod = !has(request, 'httpMethod') ? httpmethod(opts) : request.httpMethod;
+        if (httpMethod === 'POST' && !opts.jsonData) opts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         if (this.forceGetParams.length) {
             getParams = this.forceGetParams
@@ -154,7 +151,7 @@ class Client {
                 }, {});
         }
 
-        if (typeof opts.params === 'object' && !isEmpty(opts.params) && (opts.jsonData || opts.httpMethod === 'GET')) {
+        if (typeof opts.params === 'object' && !isEmpty(opts.params) && (opts.jsonData || httpMethod === 'GET')) {
             getParams = Object.keys(opts.params)
                 .filter((key) => has(opts.params, key))
                 .reduce((acc, key) => {
@@ -170,7 +167,7 @@ class Client {
         // add cache breaker to bypass HTTP caching
         if (skipCache) opts.url += (opts.url.indexOf('?') !== -1 ? '&' : '?') + '_=' + new Date().getTime();
 
-        return this.adapter.request(opts);
+        return this.adapter.request(httpMethod, opts);
     }
 }
 

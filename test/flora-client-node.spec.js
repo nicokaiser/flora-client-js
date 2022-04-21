@@ -242,12 +242,15 @@ describe('Flora node client', () => {
                     .catch(done);
             });
 
-            it('should explicitly overwrite method by parameter', (done) => {
+            it('should explicitly overwrite HTTP method by parameter', (done) => {
                 req = nock(url)
-                    .head('/user/1337')
+                    .get('/user/')
+                    .query({ action: 'search', customParameter: 1 })
                     .reply(200, response, { 'Content-Type': 'application/json; charset=utf-8' });
 
-                api.execute({ resource: 'user', id: 1337, httpMethod: 'HEAD' })
+                api.execute({
+                    resource: 'user', action: 'search', customParameter: 1, httpMethod: 'GET'
+                })
                     .then(() => done())
                     .catch(done);
             });

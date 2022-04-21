@@ -15,8 +15,8 @@ class Node {
         this.timeout = opts.timeout;
     }
 
-    request({
-        url, headers, httpMethod: method, params, jsonData
+    request(method, {
+        url, headers, params, jsonData
     }) {
         let postBody;
 

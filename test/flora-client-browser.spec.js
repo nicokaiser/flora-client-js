@@ -180,8 +180,11 @@ describe('Flora client', () => {
             });
 
             it('should explicitly overwrite method by parameter', () => {
-                api.execute({ resource: 'user', id: 1337, httpMethod: 'HEAD' });
+                api.execute({ resource: 'user', action: 'search', httpMethod: 'HEAD' });
+
                 expect(requests[0].method).to.equal('HEAD');
+                expect(requests[0].url).to.contain('action=search')
+                    .and.to.not.contain('httpMethod=');
             });
 
             it('should switch to POST if querystring gets too large', () => {
@@ -269,7 +272,8 @@ describe('Flora client', () => {
                 .then(() => {
                     expect(server.requests).to.have.length(1);
                     expect(server.requests[0]).to.have.property('url')
-                        .and.to.contain('access_token=__token__');
+                        .and.to.contain('access_token=__token__')
+                        .and.to.not.contain('auth=');
                     done();
                 })
                 .catch(done);

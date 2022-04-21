@@ -14,10 +14,10 @@ class Xhr {
         this.timeout = opts.timeout;
     }
 
-    request(cfg) {
+    request(method, cfg) {
         const xhr = new XMLHttpRequest();
 
-        xhr.open(cfg.httpMethod, cfg.url);
+        xhr.open(method, cfg.url);
         xhr.timeout = this.timeout; // must be placed after call to open method for IE11
 
         if (!isEmpty(cfg.headers)) {
@@ -26,7 +26,7 @@ class Xhr {
                 .forEach((header) => xhr.setRequestHeader(header, cfg.headers[header]));
         }
 
-        if (cfg.httpMethod !== 'POST') xhr.send();
+        if (method !== 'POST') xhr.send();
         else xhr.send(cfg.params ? querystringify(cfg.params) : cfg.jsonData);
 
         return new Promise((resolve, reject) => {
