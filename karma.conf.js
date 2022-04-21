@@ -5,7 +5,7 @@ const [webpackConfig] = require('./webpack.config');
 delete webpackConfig.entry;
 delete webpackConfig.output;
 
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+process.env.CHROME_BIN = require('playwright').chromium.executablePath();
 // process.env.FIREFOX_BIN = require('puppeteer-firefox').executablePath();
 
 module.exports = function karmaConfig(config) {
@@ -61,13 +61,10 @@ module.exports = function karmaConfig(config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['HeadlessChrome'/* , 'HeadlessFirefox' */],
+        browsers: ['ChromeHeadless'/* , 'HeadlessFirefox' */],
 
         customLaunchers: {
-            HeadlessChrome: {
-                base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
-            }/* ,
+            /* ,
             HeadlessFirefox: {
                 base: 'Firefox',
                 flags: ['-headless']
