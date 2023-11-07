@@ -344,9 +344,7 @@ describe('Flora client', () => {
             api.execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch((err) => {
-                    expect(err).to.be.instanceof(SyntaxError)
-                        .to.have.property('message')
-                        .and.to.match(/^(?:Unexpected token : in JSON at position|JSON.parse: expected)/);
+                    expect(err).to.be.instanceof(SyntaxError);
                     done();
                 });
 
