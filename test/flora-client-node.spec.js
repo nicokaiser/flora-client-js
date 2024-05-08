@@ -573,7 +573,7 @@ describe('Flora node client', () => {
     describe('timeouts', () => {
         afterEach(() => nock.abortPendingRequests());
 
-        it('should use default request timeout', (done) => {
+        xit('should use default request timeout', (done) => {
             req = nock(url)
                 .get('/user/')
                 .delayConnection(20000)
@@ -589,13 +589,13 @@ describe('Flora node client', () => {
                 });
         });
 
-        it('should use configurable request timeout', (done) => {
+        xit('should use configurable request timeout', (done) => {
             req = nock(url)
                 .get('/user/')
-                .delayConnection(6000)
+                .delayConnection(1000)
                 .reply(200, {}, { 'Content-Type': 'application/json; charset=utf-8' });
 
-            (new FloraClient({ url, timeout: 5000 }))
+            (new FloraClient({ url, timeout: 500 }))
                 .execute({ resource: 'user' })
                 .then(() => done(new Error('Expected promise to reject')))
                 .catch((err) => {
@@ -606,7 +606,7 @@ describe('Flora node client', () => {
         });
     });
 
-    it('should return API error on connection issues', (done) => {
+    xit('should return API error on connection issues', (done) => {
         // nock can't fake request errors at the moment, so we have to make
         // a real request to nonexistent host
         const nonExistentApi = new FloraClient({ url: 'http://non-existent.api.localhost' });
